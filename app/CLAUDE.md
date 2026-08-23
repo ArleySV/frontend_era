@@ -389,11 +389,14 @@ entre frontend y backend).
   FAQ) y grafo de navegación.
 - Tests: solo el `ExampleUnitTest` por defecto; falta agregar MockWebServer como
   dependencia de test.
-- Anexar a `docs/`: requisitos funcionales/no funcionales, casos de uso, historias
-  de usuario y prototipos JPG/PDF (los diseños ya están documentados en
-  `docs/decisiones-tecnicas.md` §10–16).
+- Anexar prototipos JPG/PDF a `docs/prototipos/` (los requisitos funcionales/no
+  funcionales, casos de uso e historias de usuario ya están anexados como copias
+  sincronizadas desde `BACKEND_ERA/docs`, con nota de procedencia; los diseños de
+  pantallas están en `docs/decisiones-tecnicas.md` §10–16).
 - Reemplazar el placeholder de `NetworkModule.BASE_URL` por la URL real del backend.
-- Primer commit de git (repositorio sin historial).
+
+Control de versiones: repositorio publicado en GitHub (`ArleySV/frontend_era`,
+rama `main`, commit inicial `43d3a0b`).
 
 **Próximo paso:** Fase 1 — Registro + Verificación OTP (A + A.1), capa por capa:
 `AuthRepository` sobre `AuthApi` → ViewModels → pantallas de registro (3 pasos),

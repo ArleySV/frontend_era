@@ -886,6 +886,14 @@ Estilos tipograficos del sistema (Roboto, fuente del sistema Android):
 > avatar durante registro (solo presets), y navegación del sidebar (rutas reales, no
 > "Próximamente"). Los colores y dimensiones son estimaciones visuales del prototipo HTML;
 > no existe archivo de diseño (Figma/Sketch) como fuente de verdad.
+>
+> **Corrección adicional (2026-08-23):** la política de contraseña documentada en
+> §14.6 omitía requisitos de REQ-FUN-01 CA2 (fuente oficial, ahora anexada en
+> `docs/requisitos-funcionales.md`). La política completa que implementa el
+> validador del cliente es: mínimo 8 caracteres con mayúsculas, **minúsculas**,
+> números y símbolos; no debe contener datos personales del usuario (nombre del
+> menor o del acudiente) ni ser igual al nombre de usuario. El prototipo web solo
+> exigía 4 de esos criterios — la omisión se heredó de ahí.
 
 ### 14.1 Login
 
@@ -1227,7 +1235,7 @@ Estilos tipograficos del sistema (Roboto, fuente del sistema Android):
 - Correo: no vacio, formato valido, no registrado
 - Nombre de usuario: no vacio, 3–60 caracteres (`Validators.USERNAME_MIN_LENGTH=3`, `USERNAME_MAX_LENGTH=60`), sin espacios, unico
 - Avatar: seleccionado (obligatorio)
-- Contrasena: min 8 caracteres, 1 mayuscula, 1 numero, 1 simbolo (!@#$%^&*)
+- Contrasena: min 8 caracteres, mayuscula, minuscula, numero y simbolo (!@#$%^&*); no contiene datos personales del usuario ni es igual al nombre de usuario (REQ-FUN-01 CA2 — correccion 2026-08-23)
 - Confirmar contrasena: debe coincidir
 - El "+" NO aplica durante el registro: el backend requiere sesión autenticada (`session-jwt`) para subir foto custom (`PUT /users/me/avatar`). Solo se muestran los 3 presets.
 - **Nota backend:** `RegisterRequestDto.avatar` solo acepta `preset:1|2|3` o `null` (`AvatarPreset.kt`). La foto personalizada solo es posible desde "Mi cuenta" tras iniciar sesión.

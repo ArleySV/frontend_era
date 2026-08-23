@@ -109,11 +109,12 @@ de recuperación de contraseña).
 |---|---|
 | [`app/CLAUDE.md`](app/CLAUDE.md) | Reglas permanentes de trabajo, contrato de API, matriz de trazabilidad y estado del repo (**lectura obligatoria**) |
 | [`docs/decisiones-tecnicas.md`](docs/decisiones-tecnicas.md) | Decisiones de arquitectura y dependencias + diseño visual completo (tokens, componentes y las 16 pantallas) |
-| `docs/requisitos-funcionales.md` | REQ-FUN-01…14 — *pendiente de anexar* |
-| `docs/requisitos-no-funcionales.md` | REQ-NF-01…06 — *pendiente de anexar* |
-| `docs/casos-de-uso.md` | CU-01…12 — *pendiente de anexar* |
-| `docs/historias-de-usuario.md` | HU-01…15 — *pendiente de anexar* |
-| `docs/prototipos/` | JPG/PDF de diseño — *pendiente de anexar* |
+| [`docs/requisitos-funcionales.md`](docs/requisitos-funcionales.md) | REQ-FUN-01…14 (copia sincronizada del backend) |
+| [`docs/requisitos-no-funcionales.md`](docs/requisitos-no-funcionales.md) | REQ-NF-01…06 (copia sincronizada del backend) |
+| [`docs/casos-de-uso.md`](docs/casos-de-uso.md) | CU-01…12 (copia sincronizada del backend) |
+| [`docs/historias-de-usuario.md`](docs/historias-de-usuario.md) | HU-01…15 (copia sincronizada del backend) |
+| [`docs/fase-01-registro-analisis.md`](docs/fase-01-registro-analisis.md) | Análisis y diseño de la Fase 1 — Registro + Verificación OTP |
+| `docs/prototipos/` | JPG/PDF de diseño — *pendiente de anexar* (diseño documentado en `decisiones-tecnicas.md`) |
 
 El contrato completo de los 16 endpoints vive en el `README.md` del backend
 (`BACKEND_ERA`). Ante cualquier duda de formato de request/response, consultar ese
