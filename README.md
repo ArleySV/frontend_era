@@ -78,15 +78,20 @@ com.era.app/
 Implementado hasta ahora:
 
 - Proyecto Gradle (Kotlin DSL) con todas las dependencias base declaradas.
-- Contrato remoto completo: 5 interfaces Retrofit y ~25 DTOs que espejan el backend.
+- Contrato remoto completo: 5 interfaces Retrofit y ~25 DTOs que espejan el backend,
+  verificados contra los DTOs reales (camelCase nativo sin `@SerialName`,
+  auditoría 2026-08-23).
 - `TokenManager`: JWT en `EncryptedSharedPreferences` (nunca en texto plano).
 - `JwtInterceptor`: adjunta `Authorization: Bearer <token>` automáticamente.
-- `NetworkModule` (Hilt): OkHttpClient + Retrofit + Json + provisión de las 5 APIs.
-- Tema Compose con la paleta y tipografía definidas en `docs/decisiones-tecnicas.md`.
+- `NetworkModule` (Hilt): OkHttpClient + Retrofit + Json + provisión de las 5 APIs;
+  logging HTTP nivel `BASIC` en debug (nunca loguear cuerpos con contraseña/OTP).
+- Tema Compose: pendiente aplicar los tokens ERA (`docs/decisiones-tecnicas.md`
+  §10–13); actualmente plantilla por defecto.
 
 ## Compilar y ejecutar
 
-Requisitos: Android Studio (Narwhal o superior recomendado), JDK 17, SDK 36.
+Requisitos: Android Studio (Narwhal o superior recomendado), JDK 17, SDK 37
+(compileSdk; targetSdk 36).
 
 ```bash
 # Windows
