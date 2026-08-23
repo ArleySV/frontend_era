@@ -375,7 +375,9 @@ entre frontend y backend).
 - `remote/JwtInterceptor`: adjunta `Authorization: Bearer <token>` automáticamente.
 - `di/NetworkModule` (Hilt): Json + OkHttpClient (timeouts + logging solo en DEBUG)
   + Retrofit + provisión de las 5 APIs.
-- `ui/theme/`: paleta, tipografía y tema con los design tokens documentados.
+- `ui/theme/`: sigue siendo la plantilla por defecto de Android Studio
+  (Purple/Pink + `dynamicColor` activo); los tokens ERA se implementan al iniciar
+  la Fase 1 Paso 0 (decisión D-06 de `docs/fase-01-registro-analisis.md`, pendiente).
 - `EraApplication` (`@HiltAndroidApp`) y `MainActivity` (plantilla Compose por
   defecto, sin pantallas reales aún).
 

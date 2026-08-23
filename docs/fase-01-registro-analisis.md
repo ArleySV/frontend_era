@@ -33,8 +33,9 @@ avatar personalizado con subida (Fase 9), persistencia Room (Fase 7).
 ## 3. Estado previo aprovechado
 
 Ya existe y **no se reescribe** (regla §4.13): `AuthApi` (Retrofit, suspend),
-`RegisterRequest`/`VerifyEmailRequest`/`ResendOtpRequest`/respuestas (kotlinx.serialization,
-snake_case vía `@SerialName`), `JwtInterceptor`, `TokenManager`, `NetworkModule`
+`RegisterRequest`/`VerifyEmailRequest`/respuestas (kotlinx.serialization,
+camelCase nativo sin `@SerialName`, corregido tras auditoría 2026-08-23 contra
+los DTOs reales del backend), `JwtInterceptor`, `TokenManager`, `NetworkModule`
 (Hilt), recursos `drawable-nodpi/avatar_preset_1..3.jpg`.
 
 ## 4. Flujo de navegación
@@ -105,7 +106,7 @@ durante la prueba de integración antes de asumir otro formato.
 
 | Llamada | Momento | Request | Respuesta esperada |
 |---|---|---|---|
-| `POST /auth/register` | Continuar del paso 2 | `RegisterRequest` completo (snake_case) | 201 + `MessageResponse` |
+| `POST /auth/register` | Continuar del paso 2 | `RegisterRequest` completo (camelCase nativo) | 201 + `MessageResponse` |
 | `POST /auth/verify-email` | Verificar código (paso 3) | `{ correo, codigo }` | 200 + `MessageResponse`; cuenta activa |
 | `POST /auth/resend-otp` | Reenviar (paso 3) | `{ correo }` | 200 + mensaje; throttle 60 s |
 

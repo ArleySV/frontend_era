@@ -48,7 +48,7 @@ object NetworkModule {
 
         if (com.era.app.BuildConfig.DEBUG) {
             val logging = HttpLoggingInterceptor().apply {
-                level = HttpLoggingInterceptor.Level.BODY
+                level = HttpLoggingInterceptor.Level.BASIC
             }
             builder.addInterceptor(logging)
         }

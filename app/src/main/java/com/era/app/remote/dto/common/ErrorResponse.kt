@@ -1,6 +1,5 @@
 package com.era.app.remote.dto.common
 
-import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
 @Serializable
@@ -17,5 +16,4 @@ data class ErrorResponse(
 data class FieldError(
     val field: String,
     val message: String,
-    val rejected: String?,
 )
