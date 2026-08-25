@@ -84,6 +84,19 @@
   `viewModelScope` y `Dispatchers.IO`.
 - **Fecha de decision:** 2026-08-17 (Fase 0)
 
+### 9.1 Iconografia — androidx.compose.material:material-icons-core
+
+- **Por que:** Los componentes y pantallas usan iconos Material
+  (`Icons.Outlined.Close/ArrowForward/Email`, etc.) segun la iconografia de
+  §10.5. Con el BOM 2026.02.01, `material3` ya NO lo incluye como dependencia
+  transitiva. Version resuelta por el BOM (1.7.8): declarada sin version en el
+  catalogo.
+- **Exclusion:** `material-icons-extended` NO se agrega (peso innecesario). Los
+  iconos ausentes del core (`Visibility`, `VisibilityOff`) se definen
+  localmente en `ui/components/EraIcons.kt` con los paths oficiales de Material.
+- **Aprobacion:** 2026-08-25 (regla CLAUDE.md §4.4), durante la capa de
+  componentes compartidos de Fase 1.
+
 ---
 
 # Diseno visual y pantallas

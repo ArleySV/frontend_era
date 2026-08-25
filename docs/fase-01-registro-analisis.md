@@ -134,19 +134,20 @@ Mapear siempre por el **campo `error`**, nunca por texto (anti-enumeración, §7
 | ID | Decisión | Justificación |
 |---|---|---|
 | D-01 | Un único `RegistroViewModel` compartido por los 3 pasos, scoped al grafo `register` | El POST es único con todos los datos; conserva estado al navegar atrás (REQ-FUN-01) |
-| D-02 | `EraError` sealed class + mapper central por campo `error` | Un solo lugar de mapeo (§7); pantallas solo consumen tipos |
+| D-02 | `EraError` sealed class + mapper central por campo `error` | Un solo lugar de mapeo (§7); pantallas solo consumen tipos. **Implementado** (2026-08-23): además, wrapper genérico `llamar` + `Resultado<T>` sellado (`Exito(data)`/`Fallo(EraError)`) en `RemoteAuthRepository`; `CancellationException` se re-lanza |
 | D-03 | El `register` se dispara al continuar del paso 2→3 | Los 409 (unicidad) se corrigen donde ocurren; paso 3 solo OTP |
 | D-04 | Fin del flujo → **Login** con snackbar "Cuenta verificada" | Tras registro NO hay JWT; corregido desde prototipo (ver §10) |
 | D-05 | Logging OkHttp nivel `BASIC` en debug | `BODY` escribiría contraseñas/OTP en logcat (violación §5) |
 | D-06 | Tokens ERA en `Color.kt`/`Type.kt`/`Theme.kt`; `dynamicColor=false` | La plantilla default (Purple/Pink) no es la marca; dynamic color rompería identidad en Android 12+ |
-| D-07 | Componentes compartidos en `ui/components/`: cabecera verde compacta, StepIndicator, input estilo registro, botones reg, InfoBox | Reinterpretación nativa de §13 (regla §4.13), reutilizados por Fase 5 (recuperación) |
+| D-07 | Componentes compartidos en `ui/components/`: cabecera verde compacta, StepIndicator, input estilo registro, botones reg, InfoBox | Reinterpretación nativa de §13 (regla §4.13), reutilizados por Fase 5 (recuperación). **Implementado** (2026-08-25): 5 composables + `EraIcons.kt` + token `RadiusInfoBox`; tests Compose en androidTest compilados (ver §14) |
 | D-08 | Fecha DD/MM/AAAA teclado numérico + cálculo dinámico de edad 7–11 | REQ-FUN-01 CA3; feedback inmediato, backend es autoridad |
 | D-09 | Avatares = 3 drawables locales (`avatar_preset_1..3`) | Backend acepta solo `preset:1\|2\|3`; "+" solo en Mi cuenta (Fase 9) |
 | D-10 | Reenvío OTP con countdown 60 s sincronizado al throttle | Evita 429 innecesarios; coincide con CU-11 4a |
 | D-11 | UiState inmutable (`StateFlow`) + eventos one-shot (`Channel`) | Navegación/snackbars sin duplicarse en recomposición |
-| D-12 | Tests: JUnit + `coroutines-test` (VM/validators) + MockWebServer (repository) | Criterio de éxito por fase (§6) |
+| D-12 | Tests: JUnit + `coroutines-test` (VM/validators) + MockWebServer (repository) | Criterio de éxito por fase (§6). **Implementado para repository** (2026-08-23): deps aprobadas y añadidas, 12 casos MockWebServer verdes |
 | D-13 | Política de contraseña según REQ-FUN-01 CA2 completa | Corrección sobre diseño heredado (ver §10) |
 | D-14 | Placeholder `LoginScreen` mínimo como destino de navegación | El grafo necesita la ruta desde Fase 1; se reemplaza en Fase 2 |
+| D-15 | Dependencia `androidx.compose.material:material-icons-core` (BOM, sin versión fija) | Los iconos §13 no vienen transitivos con material3 (BOM 2026.02.01). Aprobada 2026-08-25 (regla §4.4); `icons-extended` excluido — `Visibility/VisibilityOff` van en `ui/components/EraIcons.kt`. Registrada en `decisiones-tecnicas.md` §9.1 |
 
 ## 10. Correcciones registradas al diseño heredado del prototipo
 
@@ -205,3 +206,9 @@ androidTest|test/…/AuthRepositoryTest.kt (MockWebServer)
 - Ninguno bloqueante. Nota: si el usuario abandona en paso 3 sin verificar, la
   cuenta queda inactiva y el correo ocupado (409 `EMAIL_ALREADY_REGISTERED` en un
   reintento) — comportamiento del backend, se documenta en la UI del info-box.
+- **Deuda técnica (2026-08-25):** los tests Compose de la capa de componentes
+  (`androidTest`: `CompactGreenHeaderTest`, `StepIndicatorTest`,
+  `EraTextFieldTest`, `EraRegButtonsTest`, `InfoBoxTest`) están
+  **compilados** (`assembleDebugAndroidTest` verde) pero **pendientes de
+  ejecución**: no hay emulador/dispositivo conectado. Ejecutarlos con
+  `connectedDebugAndroidTest` antes de cerrar la Fase 1 (DoD §13.3).

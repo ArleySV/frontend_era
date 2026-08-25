@@ -207,7 +207,7 @@ siguiente, y requiere el plan + confirmación de la regla 3 de la sección 4.
 
 | Fase | Módulo | Endpoints backend | Complejidad | Depende de |
 |---|---|---|---|---|
-| 1 | Registro + Verificación OTP (A + A.1) | `register`, `verify-email`, `resend-otp` | Media | Fase 0 |
+| 1 | Registro + Verificación OTP (A + A.1) — **EN CURSO** | `register`, `verify-email`, `resend-otp` | Media | Fase 0 |
 | 2 | Login (B) | `login` | Baja | Fase 1 |
 | 3 | Perfil / Mi cuenta (D) | `GET /me`, `PATCH /me` | Baja | Fase 2 |
 | 4 | Logout (F) | `logout` | Muy baja | Fase 2 |
@@ -362,35 +362,51 @@ entre frontend y backend).
 
 **Fase 0 completada.** Implementado hasta ahora:
 
-- Proyecto Gradle (Kotlin DSL) creado: `minSdk` 26, `targetSdk` 36, Kotlin 2.2,
-  AGP 9.2, Version Catalog (`gradle/libs.versions.toml`).
+- Proyecto Gradle (Kotlin DSL) creado: `minSdk` 26, `targetSdk` 36,
+  `compileSdk` 37 (subido el 2026-08-23 por requisito de `androidx.core`
+  1.19.0, que exige compilar contra API 37+), Kotlin 2.2, AGP 9.2,
+  Version Catalog (`gradle/libs.versions.toml`).
 - **Decisiones de Fase 0 fijadas** (ver `docs/decisiones-tecnicas.md`): Compose
   (Material 3), Hilt, kotlinx.serialization, Retrofit 2.12 + OkHttp 4.12, Room 2.8,
   Navigation Compose, Coil 3, Security Crypto.
 - Dependencias base declaradas y aprobadas en `app/build.gradle.kts`.
 - **Contrato remoto completo (`remote/`):** 5 interfaces Retrofit (`AuthApi`,
   `UsersApi`, `ProgressApi`, `FeedbackApi`, `AvatarApi`) + DTOs que espejan el
-  backend (auth, user, progress, feedback, common).
+  backend con **camelCase nativo sin `@SerialName`**, verificado campo por campo
+  contra los DTOs reales del backend (auditoría del 2026-08-23; auth, user,
+  progress, feedback, common).
 - `utils/TokenManager`: JWT en `EncryptedSharedPreferences` (regla §5 cumplida).
 - `remote/JwtInterceptor`: adjunta `Authorization: Bearer <token>` automáticamente.
-- `di/NetworkModule` (Hilt): Json + OkHttpClient (timeouts + logging solo en DEBUG)
-  + Retrofit + provisión de las 5 APIs.
-- `ui/theme/`: sigue siendo la plantilla por defecto de Android Studio
-  (Purple/Pink + `dynamicColor` activo); los tokens ERA se implementan al iniciar
-  la Fase 1 Paso 0 (decisión D-06 de `docs/fase-01-registro-analisis.md`, pendiente).
+- `di/NetworkModule` (Hilt): Json + OkHttpClient (timeouts + logging `BASIC`
+  solo en DEBUG) + Retrofit + provisión de las 5 APIs.
+- **Capa `repository/` iniciada** (2026-08-23): `repository/AuthRepository.kt`
+  (interfaz, solo endpoints de Fase 1: `register`, `verify-email`, `resend-otp`),
+  `RemoteAuthRepository` (impl Retrofit con wrapper genérico `llamar` +
+  `Resultado<T>` sellado `Exito(data)`/`Fallo(EraError)`; re-lanza
+  `CancellationException`), `di/RepositoryModule` (`@Binds`).
+- **Error-mapper central** (D-02, §7): `utils/EraError.kt` (sealed class de dominio)
+  + `utils/ErrorMapper.kt` (mapea por el campo `error` de `ErrorResponse`, nunca por
+  mensaje; `IOException` → `ErrorConexion`).
+- `ui/theme/`: **tokens ERA implementados** (2026-08-23, decisión D-06 de
+  `docs/fase-01-registro-analisis.md`): paleta completa en `Color.kt` (§10.1),
+  tipografía Roboto del sistema en `Type.kt` (§10.2), radios + esquema claro
+  Material en `Theme.kt` (§10.3); `dynamicColor` desactivado — identidad visual
+  fija, sin modo oscuro definido todavía.
+- **Tests** (2026-08-23): **43 verdes — 42 propios + `ExampleUnitTest` de
+  plantilla**: Validators 12, PasswordPolicy 13, ErrorMapper 5,
+  AuthRepository (MockWebServer) 12. Deps de test añadidas al catálogo:
+  `mockwebserver` y `kotlinx-coroutines-test` (solo `testImplementation`).
 - `EraApplication` (`@HiltAndroidApp`) y `MainActivity` (plantilla Compose por
   defecto, sin pantallas reales aún).
 
 **Pendiente:**
 
-- Capa `repository/` (orquestación Room + Remote) — vacía.
-- Error-mapper central de códigos HTTP (§7) — no existe todavía.
+- Capa `repository/`: auth ya cubierta (Fase 1); la orquestación Room + Remote
+  llega con la Fase 7.
 - Capa `data/` (Room: entities, DAOs, database) — llega con la Fase 7.
 - Fases 1–9: ningún ViewModel ni pantalla implementados.
 - Fase 10: pantallas transversales (Splash, Sidebar, Home, Niveles, Juego, Ajustes,
   FAQ) y grafo de navegación.
-- Tests: solo el `ExampleUnitTest` por defecto; falta agregar MockWebServer como
-  dependencia de test.
 - Anexar prototipos JPG/PDF a `docs/prototipos/` (los requisitos funcionales/no
   funcionales, casos de uso e historias de usuario ya están anexados como copias
   sincronizadas desde `BACKEND_ERA/docs`, con nota de procedencia; los diseños de
@@ -400,6 +416,10 @@ entre frontend y backend).
 Control de versiones: repositorio publicado en GitHub (`ArleySV/frontend_era`,
 rama `main`, commit inicial `43d3a0b`).
 
-**Próximo paso:** Fase 1 — Registro + Verificación OTP (A + A.1), capa por capa:
-`AuthRepository` sobre `AuthApi` → ViewModels → pantallas de registro (3 pasos),
-siguiendo las reglas §4 y el diseño de `docs/decisiones-tecnicas.md` §14.5–14.7.
+**Próximo paso:** Fase 1 **en curso** (plan vinculante:
+`docs/fase-01-registro-analisis.md`, decisiones D-01…D-14). Orden acordado
+(2026-08-23): fundaciones de tema (D-06) → capa `utils/` (`EraError`,
+error-mapper central §7, Validators REQ-FUN-01 CA2/D-13 + tests JUnit) →
+capa repositorio (`AuthRepository` + tests MockWebServer) → ViewModels
+(D-01, D-11) → componentes compartidos §12 y pantallas de registro §14.5–14.7.
+Detener para revisión del propietario al completar cada capa.
