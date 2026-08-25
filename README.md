@@ -85,8 +85,8 @@ Implementado hasta ahora:
 - `JwtInterceptor`: adjunta `Authorization: Bearer <token>` automáticamente.
 - `NetworkModule` (Hilt): OkHttpClient + Retrofit + Json + provisión de las 5 APIs;
   logging HTTP nivel `BASIC` en debug (nunca loguear cuerpos con contraseña/OTP).
-- Tema Compose: pendiente aplicar los tokens ERA (`docs/decisiones-tecnicas.md`
-  §10–13); actualmente plantilla por defecto.
+- Tema Compose: tokens ERA aplicados (paleta, tipografía y radios de
+  `docs/decisiones-tecnicas.md` §10; `dynamicColor` desactivado).
 
 ## Compilar y ejecutar
 
