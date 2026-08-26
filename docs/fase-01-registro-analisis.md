@@ -206,9 +206,15 @@ androidTest|test/…/AuthRepositoryTest.kt (MockWebServer)
 - Ninguno bloqueante. Nota: si el usuario abandona en paso 3 sin verificar, la
   cuenta queda inactiva y el correo ocupado (409 `EMAIL_ALREADY_REGISTERED` en un
   reintento) — comportamiento del backend, se documenta en la UI del info-box.
-- **Deuda técnica (2026-08-25):** los tests Compose de la capa de componentes
-  (`androidTest`: `CompactGreenHeaderTest`, `StepIndicatorTest`,
-  `EraTextFieldTest`, `EraRegButtonsTest`, `InfoBoxTest`) están
-  **compilados** (`assembleDebugAndroidTest` verde) pero **pendientes de
-  ejecución**: no hay emulador/dispositivo conectado. Ejecutarlos con
+- **Deuda técnica (2026-08-25):** 8 clases androidTest propias (5 componentes:
+  `CompactGreenHeaderTest`, `StepIndicatorTest`, `EraTextFieldTest`,
+  `EraRegButtonsTest`, `InfoBoxTest` + 3 pantallas: `RegistroPaso1ScreenTest`,
+  `RegistroPaso2ScreenTest`, `RegistroPaso3ScreenTest`), 21 métodos @Test
+  totales — **compilados** (`assembleDebugAndroidTest` verde) pero **pendientes
+  de ejecución**: no hay emulador/dispositivo conectado. Ejecutarlos con
   `connectedDebugAndroidTest` antes de cerrar la Fase 1 (DoD §13.3).
+- **Diferido (2026-08-25):** Snackbar de éxito "Cuenta creada. Verifica tu
+  correo…" post-navegación al login queda pendiente. El `collectLatest` del
+  `eventos` flow muere al navegar (el composable se descompone). Patrón
+  correcto: pasar el mensaje vía `savedStateHandle` del NavBackStackEntry del
+  login destino, implementable en Fase 2 cuando `LoginScreen` sea real.

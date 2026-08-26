@@ -45,3 +45,12 @@ val ColorNivelDisponibleFondo = Color(0xFFDCEBFB)
 val ColorNivelBloqueadoFondo = Color(0xFFECECEC)
 val ColorNivelBloqueadoBorde = Color(0xFFD5D5D5)
 val ColorNivelBloqueadoTexto = Color(0xFF8A8A8A)
+
+// ── §14.6 Avatar selector — colores placeholders de presets ──────────────
+val ColorAvatarPreset1 = Color(0xFF037373)
+val ColorAvatarPreset2 = Color(0xFF69BFA0)
+val ColorAvatarPreset3 = Color(0xFFA9D9CB)
+val ColorAvatarBorderDefault = Color(0xFFE0E0E0)
+
+// ── §14.7 Icono sobre paso 3 (verificación OTP) ─────────────────────────
+val ColorOtpIconBg = Color(0xFFBDBDBD)
