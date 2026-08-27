@@ -23,7 +23,7 @@ import javax.inject.Singleton
 @InstallIn(SingletonComponent::class)
 object NetworkModule {
 
-    private const val BASE_URL = "https://era-backend.example.com/api/v1/"
+    private const val BASE_URL = "http://192.168.20.64:8080/api/v1/"
     private const val CONNECT_TIMEOUT = 15L
     private const val READ_TIMEOUT = 15L
     private const val WRITE_TIMEOUT = 15L
