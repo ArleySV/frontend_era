@@ -1,6 +1,8 @@
 package com.era.app.repository
 
 import com.era.app.remote.api.AuthApi
+import com.era.app.remote.dto.auth.LoginRequest
+import com.era.app.remote.dto.auth.LoginResponse
 import com.era.app.remote.dto.auth.RegisterRequest
 import com.era.app.remote.dto.auth.ResendOtpRequest
 import com.era.app.remote.dto.auth.VerifyEmailRequest
@@ -27,6 +29,9 @@ class RemoteAuthRepository @Inject constructor(
 
     override suspend fun resendOtp(request: ResendOtpRequest): Resultado<Unit> =
         llamar { api.resendOtp(request) }
+
+    override suspend fun login(request: LoginRequest): Resultado<LoginResponse> =
+        llamar { api.login(request) }
 
     private suspend fun <T> llamar(bloque: suspend () -> T): Resultado<T> =
         try {

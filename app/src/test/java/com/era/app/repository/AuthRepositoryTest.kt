@@ -1,6 +1,7 @@
 package com.era.app.repository
 
 import com.era.app.remote.api.AuthApi
+import com.era.app.remote.dto.auth.LoginRequest
 import com.era.app.remote.dto.auth.RegisterRequest
 import com.era.app.remote.dto.auth.ResendOtpRequest
 import com.era.app.remote.dto.auth.VerifyEmailRequest
@@ -194,6 +195,89 @@ class AuthRepositoryTest {
         val r = repo.register(requestRegistro())
 
         assertEquals(EraError.ErrorConexion, (r as Resultado.Fallo).error)
+    }
+
+    // ---------- login ----------
+
+    private fun requestLogin() = LoginRequest(
+        usuarioOCorreo = "usuario@test.com",
+        contrasena = "<TEST_PASSWORD>",
+    )
+
+    @Test
+    fun `login 200 mapea a Exito con token y envia ruta correcta`() = runTest {
+        server.enqueue(respuesta(200, """{"token":"jwt_abc123"}"""))
+
+        val r = repo.login(requestLogin())
+
+        assertTrue(r is Resultado.Exito)
+        assertEquals("jwt_abc123", (r as Resultado.Exito).data.token)
+        val peticion = server.takeRequest()
+        assertEquals("POST /api/v1/auth/login", peticion.method + " " + peticion.path)
+    }
+
+    @Test
+    fun `login 401 INVALID_CREDENTIALS mapea a CredencialesInvalidas`() = runTest {
+        server.enqueue(respuesta(401, cuerpoError(401, "INVALID_CREDENTIALS")))
+
+        val r = repo.login(requestLogin())
+
+        assertEquals(EraError.CredencialesInvalidas, (r as Resultado.Fallo).error)
+    }
+
+    @Test
+    fun `login 423 ACCOUNT_LOCKED mapea a CuentaBloqueada`() = runTest {
+        server.enqueue(respuesta(423, cuerpoError(423, "ACCOUNT_LOCKED")))
+
+        val r = repo.login(requestLogin())
+
+        assertEquals(EraError.CuentaBloqueada, (r as Resultado.Fallo).error)
+    }
+
+    @Test
+    fun `login 403 ACCOUNT_INACTIVE mapea a CuentaInactiva`() = runTest {
+        server.enqueue(respuesta(403, cuerpoError(403, "ACCOUNT_INACTIVE")))
+
+        val r = repo.login(requestLogin())
+
+        assertEquals(EraError.CuentaInactiva, (r as Resultado.Fallo).error)
+    }
+
+    @Test
+    fun `login 400 VALIDATION_ERROR mapea a Validacion`() = runTest {
+        server.enqueue(
+            respuesta(
+                400,
+                """{"timestamp":"2026-08-23T10:00:00Z","status":400,"error":"VALIDATION_ERROR",
+                   "message":"Datos invalidos","path":"/api/v1/auth/login",
+                   "details":[{"field":"usuarioOCorreo","message":"No puede estar vacio"}]}"""
+            )
+        )
+
+        val r = repo.login(requestLogin())
+
+        assertTrue(r is Resultado.Fallo)
+        assertTrue((r as Resultado.Fallo).error is EraError.Validacion)
+    }
+
+    @Test
+    fun `login IOException mapea a ErrorConexion`() = runTest {
+        server.enqueue(MockResponse().setSocketPolicy(SocketPolicy.DISCONNECT_AT_START))
+
+        val r = repo.login(requestLogin())
+
+        assertEquals(EraError.ErrorConexion, (r as Resultado.Fallo).error)
+    }
+
+    @Test
+    fun `login request envia body correcto`() = runTest {
+        server.enqueue(respuesta(200, """{"token":"jwt_xyz"}"""))
+
+        repo.login(requestLogin())
+
+        val body = server.takeRequest().body.readUtf8()
+        assertTrue(body.contains("usuarioOCorreo"))
+        assertTrue(body.contains("contrasena"))
     }
 
     private fun cuerpoError(status: Int, error: String): String =

@@ -2,6 +2,8 @@ package com.era.app.ui.register
 
 import com.era.app.repository.AuthRepository
 import com.era.app.repository.Resultado
+import com.era.app.remote.dto.auth.LoginRequest
+import com.era.app.remote.dto.auth.LoginResponse
 import com.era.app.remote.dto.auth.RegisterRequest
 import com.era.app.remote.dto.auth.ResendOtpRequest
 import com.era.app.remote.dto.auth.VerifyEmailRequest
@@ -568,5 +570,8 @@ class RegistroViewModelTest {
             return resendQueue.removeFirstOrNull()
                 ?: error("resendOtp llamado sin respuesta encolada")
         }
+
+        override suspend fun login(request: LoginRequest): Resultado<LoginResponse> =
+            error("No usado en registro tests")
     }
 }

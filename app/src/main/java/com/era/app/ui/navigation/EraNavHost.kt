@@ -9,7 +9,9 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.navigation
-import com.era.app.ui.login.LoginPlaceholderScreen
+import com.era.app.ui.login.HomePlaceholderScreen
+import com.era.app.ui.login.HomePlaceholderViewModel
+import com.era.app.ui.login.LoginScreen
 import com.era.app.ui.register.RegistroPaso1Screen
 import com.era.app.ui.register.RegistroPaso2Screen
 import com.era.app.ui.register.RegistroPaso3Screen
@@ -27,9 +29,22 @@ fun EraNavHost(
         modifier = modifier,
     ) {
         composable(EraRoutes.LOGIN) {
-            LoginPlaceholderScreen(
-                onNavigateToRegistro = {
-                    navController.navigate(EraRoutes.REGISTRO)
+            LoginScreen(
+                onNavigateToHome = { navController.navigate(EraRoutes.HOME_PLACEHOLDER) },
+                onNavigateToRegistro = { navController.navigate(EraRoutes.REGISTRO) },
+                snackbarHostState = snackbarHostState,
+                backStackEntry = navController.getBackStackEntry(EraRoutes.LOGIN),
+            )
+        }
+
+        composable(EraRoutes.HOME_PLACEHOLDER) {
+            val vm: HomePlaceholderViewModel = hiltViewModel()
+            HomePlaceholderScreen(
+                onCerrarSesion = {
+                    vm.cerrarSesion()
+                    navController.navigate(EraRoutes.LOGIN) {
+                        popUpTo(0) { inclusive = true }
+                    }
                 },
             )
         }
@@ -80,8 +95,11 @@ fun EraNavHost(
                     vm = vm,
                     snackbarHostState = snackbarHostState,
                     onRegistroExitoso = {
+                        navController.getBackStackEntry(EraRoutes.LOGIN)
+                            .savedStateHandle["registro_exitoso"] = true
                         navController.navigate(EraRoutes.LOGIN) {
                             popUpTo(0) { inclusive = true }
+                            launchSingleTop = true
                         }
                     },
                 )

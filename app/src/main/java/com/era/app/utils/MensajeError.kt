@@ -12,6 +12,9 @@ fun EraError.mensajeUsuario(): String = when (this) {
     is EraError.ErrorServidor -> "Error del servidor. Intenta más tarde"
     is EraError.ErrorConexion -> "Sin conexión. Verifica tu internet"
     is EraError.Desconocido -> "Error inesperado"
+    is EraError.CredencialesInvalidas -> "Correo/usuario o contraseña incorrectos"
+    is EraError.CuentaBloqueada -> "Cuenta bloqueada temporalmente"
+    is EraError.CuentaInactiva -> "Tu cuenta fue desactivada"
 }
 
 fun mensajeCampo(campo: CampoRegistro): String = when (campo) {
@@ -47,5 +50,8 @@ private infix fun CampoRegistro.mapsTo(error: EraError): Boolean = when (error) 
     is EraError.ReenvioThrottled,
     is EraError.ErrorServidor,
     is EraError.ErrorConexion,
-    is EraError.Desconocido -> false
+    is EraError.Desconocido,
+    is EraError.CredencialesInvalidas,
+    is EraError.CuentaBloqueada,
+    is EraError.CuentaInactiva -> false
 }

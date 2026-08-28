@@ -207,8 +207,8 @@ siguiente, y requiere el plan + confirmación de la regla 3 de la sección 4.
 
 | Fase | Módulo | Endpoints backend | Complejidad | Depende de |
 |---|---|---|---|---|
-| 1 | Registro + Verificación OTP (A + A.1) — **EN CURSO** | `register`, `verify-email`, `resend-otp` | Media | Fase 0 |
-| 2 | Login (B) | `login` | Baja | Fase 1 |
+| 1 | Registro + Verificación OTP (A + A.1) — **COMPLETADA** | `register`, `verify-email`, `resend-otp` | Media | Fase 0 |
+| 2 | Login (B) — **COMPLETADA** | `login` | Baja | Fase 1 |
 | 3 | Perfil / Mi cuenta (D) | `GET /me`, `PATCH /me` | Baja | Fase 2 |
 | 4 | Logout (F) | `logout` | Muy baja | Fase 2 |
 | 5 | Recuperación de contraseña (C) | `password-reset/request\|verify\|confirm` | Media | Fase 2 |
@@ -360,7 +360,9 @@ entre frontend y backend).
 
 ## 10. Estado actual de este repositorio
 
-**Fase 0 completada.** Implementado hasta ahora:
+**Fase 0 completada.** **Fase 1 completada.** **Fase 2 completada.**
+
+### Fase 0 — Preparación del entorno
 
 - Proyecto Gradle (Kotlin DSL) creado: `minSdk` 26, `targetSdk` 36,
   `compileSdk` 37 (subido el 2026-08-23 por requisito de `androidx.core`
@@ -392,34 +394,69 @@ entre frontend y backend).
   tipografía Roboto del sistema en `Type.kt` (§10.2), radios + esquema claro
   Material en `Theme.kt` (§10.3); `dynamicColor` desactivado — identidad visual
   fija, sin modo oscuro definido todavía.
-- **Tests** (2026-08-23): **43 verdes — 42 propios + `ExampleUnitTest` de
-  plantilla**: Validators 12, PasswordPolicy 13, ErrorMapper 5,
+- **Tests**: Validators 12, PasswordPolicy 13, ErrorMapper 5,
   AuthRepository (MockWebServer) 12. Deps de test añadidas al catálogo:
   `mockwebserver` y `kotlinx-coroutines-test` (solo `testImplementation`).
 - `EraApplication` (`@HiltAndroidApp`) y `MainActivity` (plantilla Compose por
   defecto, sin pantallas reales aún).
 
+### Fase 1 — Registro + Verificación OTP (completada 2026-08-23)
+
+**Plan vinculante:** `docs/fase-01-registro-analisis.md`, decisiones D-01…D-14.
+
+- **Repository:** `register()`, `verifyEmail()`, `resendOtp()` en `AuthRepository`
+  + `RemoteAuthRepository`.
+- **Errores:** `CorreoRegistrado`, `CorreoBloqueado`, `UsuarioEnUso`, `OtpInvalido`,
+  `ReenvioThrottled` + tests `ErrorMapperTest` (MockWebServer).
+- **ViewModels:** `RegistroViewModel` (Paso1→Paso2→Paso3), `VerificarEmailViewModel`
+  (OTP + countdown delegado a backend D-16).
+- **Componentes:** `CompactGreenHeader`, `EraRegButtons`, `InfoBox`, `EraTextField`,
+  `StepIndicator`, `EraTextFieldPassword`, `EraCheckbox`.
+- **Pantallas:** `RegistroPaso1Screen`, `RegistroPaso2Screen`, `RegistroPaso3Screen`,
+  `VerificarEmailScreen`, `RegistroExitosoScreen`.
+- **Navegación:** `EraRoutes.REGISTRO_PASO1/2/3`, `VERIFICAR_EMAIL`, `REGISTRO_EXITOSO`,
+  `EraNavHost` con transiciones.
+- **Tests:** 74 verdes — Validators 12, PasswordPolicy 13, ErrorMapper 5,
+  AuthRepository 12, RegistroViewModel 24, Componentes androidTest 8.
+
+### Fase 2 — Login (completada 2026-08-27)
+
+**Plan vinculante:** `docs/fase-02-login-analisis.md`, decisiones D-15…D-21.
+
+- **Repository:** `login()` añadido a `AuthRepository` + `RemoteAuthRepository`.
+- **Errores:** `CredencialesInvalidas`, `CuentaBloqueada`, `CuentaInactiva` añadidos
+  a `EraError` + mappers en `ErrorMapper.kt` + `MensajeError.kt`.
+- **Sesión:** `SesionRepository` (interfaz) + `TokenManagerSesion` (adapter sobre
+  `TokenManager`) para permitir testing con fakes.
+- **ViewModel:** `LoginViewModel` (@HiltViewModel, `LoginUiState`, `LoginEvento`,
+  `CampoLogin`) — patrón idéntico a `RegistroViewModel`.
+- **Componentes:** `HeroLogin`, `LoginInputPill`, `LoginButton` (nuevos, no reutilizan
+  `EraTextField` por estilo diferente).
+- **Pantallas:** `LoginContent` + `LoginScreen` (D-18: post-login → `HomePlaceholderScreen`),
+  `HomePlaceholderViewModel` (cerrar sesión).
+- **Navegación:** `EraRoutes.LOGIN`, `HOME_PLACEHOLDER`. D-14 (snackbar post-registro)
+  vía `savedStateHandle` del `NavBackStackEntry` destino (eliminado el singleton
+  `RegistroEstado`).
+- **Vector Drawables:** `signo_igual.xml`, `signo_abc123.xml`, `signomas.xml`
+  (SVGs reales convertidos desde `C:\Users\esalc\Documents\Mi_proyecto_era_frontend\ERA_app\assets\img\`).
+- **Tests:** 93 verdes — Fase 1 (74) + LoginViewModel 11 + AuthRepository login
+  (7 MockWebServer) + ErrorMapper login (1).
+
 **Pendiente:**
 
-- Capa `repository/`: auth ya cubierta (Fase 1); la orquestación Room + Remote
-  llega con la Fase 7.
+- Reemplazar el placeholder de `NetworkModule.BASE_URL` por la URL real
+  del backend.
+- Fase 1–2: `ClickableText` (deprecado) → migrar a `Text` + `LinkAnnotation` cuando
+  la API estable lo soporte.
 - Capa `data/` (Room: entities, DAOs, database) — llega con la Fase 7.
-- Fases 1–9: ningún ViewModel ni pantalla implementados.
-- Fase 10: pantallas transversales (Splash, Sidebar, Home, Niveles, Juego, Ajustes,
-  FAQ) y grafo de navegación.
 - Anexar prototipos JPG/PDF a `docs/prototipos/` (los requisitos funcionales/no
   funcionales, casos de uso e historias de usuario ya están anexados como copias
   sincronizadas desde `BACKEND_ERA/docs`, con nota de procedencia; los diseños de
   pantallas están en `docs/decisiones-tecnicas.md` §10–16).
-- Reemplazar el placeholder de `NetworkModule.BASE_URL` por la URL real del backend.
 
 Control de versiones: repositorio publicado en GitHub (`ArleySV/frontend_era`,
 rama `main`, commit inicial `43d3a0b`).
 
-**Próximo paso:** Fase 1 **en curso** (plan vinculante:
-`docs/fase-01-registro-analisis.md`, decisiones D-01…D-14). Orden acordado
-(2026-08-23): fundaciones de tema (D-06) → capa `utils/` (`EraError`,
-error-mapper central §7, Validators REQ-FUN-01 CA2/D-13 + tests JUnit) →
-capa repositorio (`AuthRepository` + tests MockWebServer) → ViewModels
-(D-01, D-11) → componentes compartidos §12 y pantallas de registro §14.5–14.7.
-Detener para revisión del propietario al completar cada capa.
+**Próximo paso:** Fase 3 — Perfil / Mi cuenta (Módulo D: `GET /me`, `PATCH /me`).
+Depende de Fase 2 (JWT habilitado). Plan vinculante: `docs/` fase 3 + decisiones
+D-XX. Detener para revisión del propietario al completar cada capa.

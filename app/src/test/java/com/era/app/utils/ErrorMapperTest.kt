@@ -46,6 +46,13 @@ class ErrorMapperTest {
     }
 
     @Test
+    fun `codigos de negocio de fase dos login mapean a su tipo`() {
+        assertEquals(EraError.CredencialesInvalidas, ErrorMapper.desdeHttp(401, body("INVALID_CREDENTIALS")))
+        assertEquals(EraError.CuentaBloqueada, ErrorMapper.desdeHttp(423, body("ACCOUNT_LOCKED")))
+        assertEquals(EraError.CuentaInactiva, ErrorMapper.desdeHttp(403, body("ACCOUNT_INACTIVE")))
+    }
+
+    @Test
     fun `codigo desconocido conserva status y cuerpo nulo tambien`() {
         assertEquals(EraError.Desconocido(418), ErrorMapper.desdeHttp(418, body("TEAPOT")))
         assertEquals(EraError.Desconocido(503), ErrorMapper.desdeHttp(503, null))

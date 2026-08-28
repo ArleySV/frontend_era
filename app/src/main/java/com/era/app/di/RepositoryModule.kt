@@ -2,6 +2,8 @@ package com.era.app.di
 
 import com.era.app.repository.AuthRepository
 import com.era.app.repository.RemoteAuthRepository
+import com.era.app.repository.SesionRepository
+import com.era.app.repository.TokenManagerSesion
 import dagger.Binds
 import dagger.Module
 import dagger.hilt.InstallIn
@@ -15,4 +17,8 @@ abstract class RepositoryModule {
     @Binds
     @Singleton
     abstract fun bindAuthRepository(impl: RemoteAuthRepository): AuthRepository
+
+    @Binds
+    @Singleton
+    abstract fun bindSesionRepository(impl: TokenManagerSesion): SesionRepository
 }

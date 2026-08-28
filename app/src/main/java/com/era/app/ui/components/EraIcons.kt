@@ -11,6 +11,9 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.PathFillType
 import androidx.compose.ui.graphics.SolidColor
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.outlined.Email
+import androidx.compose.material.icons.outlined.Lock
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.graphics.vector.PathParser
 import androidx.compose.ui.tooling.preview.Preview
@@ -37,6 +40,10 @@ private val NodosVisibilidad = PathParser().parsePathString(RUTA_VISIBILITY).toN
 private val NodosVisibilidadOff = PathParser().parsePathString(RUTA_VISIBILITY_OFF).toNodes()
 
 object EraIcons {
+
+    val EmailOutline: ImageVector by lazy { Icons.Outlined.Email }
+
+    val LockOutline: ImageVector by lazy { Icons.Outlined.Lock }
 
     val Visibility: ImageVector by lazy {
         materialIcon(name = "Era.Visibility") {
