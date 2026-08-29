@@ -1457,79 +1457,97 @@ Fondo blanco, padding 24/16, lista vertical con gap 20dp entre tarjetas.
 > Usa cabecera gris Settings (misma que Ajustes) — es una de las dos pantallas con este
 > tratamiento. El backend solo expone 5 campos via `GET /users/me` y solo permite editar
 > el username (`PATCH`) y el avatar (`PUT`). La cedula del acudiente y otros datos
-> internos nunca se exponen.
+> internos nunca se exponen. Formato real implementado (mejora visual 2026-08-28,
+> acta fase-03 §14.6; difiere del diseño especulado original, registrado como
+> desviaciones en el mismo acta).
 
 **Fondo general:** blanco.
 
 #### Cabecera (Top Bar)
 
-- Mismo estilo que Ajustes: fondo `ColorSettingsHeaderBg` (#767676), alto ~230dp, color plano
+- Mismo estilo que Ajustes: fondo `ColorSettingsHeaderBg` (#767676), alto minimo ~230dp, color plano
 - Boton retroceso: circulo 64dp, fondo `ColorSettingsBackBg`, icono `ColorSettingsBackIcon`
-- Titulo "Mi Cuenta": 34-36sp Bold blanco
+- Titulo "Mi Cuenta": 34sp Bold blanco, **centrado en el ancho completo** de la cabecera
+  (Box overlay: boton top-start, titulo `Alignment.Center` + `fillMaxWidth` + `TextAlign.Center`)
 
 ```
 ┌─────────────────────────────────────────┐
-│  ← (circulo 64dp)     Mi Cuenta        │  cabecera gris Settings
+│  ← (circulo 64dp)                       │  cabecera gris Settings
+│                    Mi Cuenta            │  titulo 34sp Bold blanco, centrado
 │▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓│  alto ~230dp, fondo #767676
-│▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓│
 └─────────────────────────────────────────┘
 ```
 
 #### Tarjeta contenedora
 
-- Mismo estilo que Ajustes: borde 1dp `ColorCardBorder`, radio 24dp, padding 24dp
-- Superpuesta al final de la cabecera
+- Borde 1dp `ColorCardBorder`, radio 24dp, padding 24dp, elevacion sutil
+  (`.shadow(2.dp, RoundedCornerShape(24.dp))`)
+- Superpuesta al final de la cabecera; el **avatar cabalga el borde superior** de la
+  tarjeta (Box: tarjeta con `offset(y=50.dp)`, avatar `Alignment.TopCenter` +
+  `zIndex(1)`, `Spacer(48.dp)` interno para no cubrir el contenido)
 
 ```
 ┌─────────────────────────────────────────┐
+│                  ┌────────┐             │
+│                  │ Avatar │             │  avatar cabalga el borde superior
+│                  └────────┘             │  (offset 50dp fuera / 50dp dentro)
 │  ┌─────────────────────────────────┐    │
-│  │         ┌────────┐              │    │
-│  │         │ Avatar │              │    │  avatar 100dp circular
-│  │         └────────┘              │    │  fondo ColorPrimaryLight
-│  │         Cambiar avatar          │    │  link texto 14sp ColorPrimary
+│  │  ◎  Nombre del menor           │    │  icono circulo 40dp + label 16sp
+│  │      María López               │    │  valor 18sp lineHeight 22sp
+│  │  ─────────────────────────────  │    │  divisor ColorDivider entre filas
+│  │  ◎  Correo electrónico         │    │
+│  │      acudiente@test.com        │    │
 │  │  ─────────────────────────────  │    │
-│  │                                 │    │
-│  │  Nombre del menor               │    │  16sp Bold, ColorSettingsLabel
-│  │  Maria Lopez                    │    │  18sp Regular, negro
-│  │  ─────────────────────────────  │    │  solo lectura
-│  │                                 │    │
-│  │  Correo electronico             │    │  16sp Bold, ColorSettingsLabel
-│  │  maria@ejemplo.com              │    │  18sp Regular, negro
-│  │  ─────────────────────────────  │    │  solo lectura
-│  │                                 │    │
-│  │  Nombre de usuario              │    │  16sp Bold, ColorSettingsLabel
-│  │  @maria_lopez          [Editar] │    │  18sp Regular + link "Editar"
-│  │  ─────────────────────────────  │    │  solo el usuario es editable
-│  │                                 │    │
-│  │  Fecha de nacimiento            │    │  16sp Bold, ColorSettingsLabel
-│  │  15/03/2015                     │    │  18sp Regular, negro
-│  │                                 │    │  solo lectura
+│  │  ◎  Nombre de usuario  [✎]     │    │  ✎ boton "Editar" con lapiz 18dp
+│  │      María López               │    │
+│  │  ─────────────────────────────  │    │
+│  │  ◎  Fecha de nacimiento        │    │
+│  │      15/03/2015                │    │
 │  └─────────────────────────────────┘    │
 └─────────────────────────────────────────┘
 ```
 
+**Filas (`SettingsCardRow`):**
+- Icono en circulo 40dp `ColorPrimaryPale` + icono 20dp `ColorPrimary` (Person/Email/
+  DateRange segun el campo); gap icono↔texto `width(20.dp)`
+- Label 16sp **SemiBold** `ColorSettingsLabel` (desviacion: el diseño especulado
+  pedia Bold); valor 18sp Regular `ColorTextDark`, `lineHeight 22.sp`
+- Divisor `HorizontalDivider` `ColorDivider` entre filas (la ultima sin divisor);
+  espaciado vertical 16dp entre filas
+- Fila username: accion "Editar" = `TextButton` con icono lapiz `Edit` 18dp
+  `ColorPrimary` + texto 14sp Medium `ColorPrimary`
+
 **Avatar:**
-- 100dp circular, fondo `ColorPrimaryLight`
-- Si el usuario tiene avatar personalizado: imagen cargada con Coil desde `GET /users/avatar`
-- Si no: iniciales del usuario en 32sp Bold `ColorPrimary`
-- Link "Cambiar avatar" debajo: 14sp, color `ColorPrimary`, clicable
-- Al tocar: abre selector de avatar (mismo patron del registro paso 2)
+- 100dp circular con **anillo 4dp `ColorTextWhite`** (`border`) + **sombra 6dp**
+  (`shadow(elevation=6.dp, CircleShape)`), fondo `ColorPrimaryLight`
+- `avatar == "preset:1|2|3"` → se dibuja el drawable local del preset
+- `avatar == "custom:*"` **o** `null` → iniciales en 32sp Bold `ColorPrimary`
+  (degradacion, no se carga con Coil en esta fase)
+- **Fase 9 (Module I / D-27 del acta fase-03):** aqui se implementara la carga con
+  Coil de `GET /users/me/avatar` y el link "Cambiar avatar" (selector de avatar del
+  registro paso 2 + subida multipart). Esa especificacion funcional sigue siendo
+  valida; solo no se implementa hasta dicha fase.
 
 **Campos:**
 - **Nombre del menor:** solo lectura (no editable desde la app)
 - **Correo electronico:** solo lectura
-- **Nombre de usuario:** editable — link "Editar" a la derecha
+- **Nombre de usuario:** editable — accion "Editar" a la derecha
   - Abre Dialog con campo de texto (mismo estilo reg-input), boton "Guardar"
   - Validacion: 3-60 caracteres, sin espacios, unico
   - Backend: `PATCH /users/me` con `{ "nombreUsuario": "nuevo_nombre" }`
   - Exito: actualiza el nombre en pantalla
-  - Error: muestra error inline en el Dialog
+  - 409 CONFLICT: muestra error inline en el Dialog "El nombre de usuario ya está
+    en uso" (Dialog permanece abierto)
 - **Fecha de nacimiento:** solo lectura, formato DD/MM/AAAA
 
 **Backend:**
-- `GET /users/profile` — carga los 5 campos
+- `GET /users/me` — carga los 5 campos (`nombreMenor`, `fechaNacimiento` ISO,
+  `correo`, `nombreUsuario`, `avatar`)
 - `PATCH /users/me` — edita solo username
-- `PUT /users/avatar` — cambia avatar (Module I)
+  - `401 UNAUTHORIZED` / `403 ACCOUNT_INACTIVE` → cierran sesion local
+    silenciosamente y navegan a Login (regla CLAUDE.md §5)
+  - `400 INVALID_REQUEST` / `404 NOT_FOUND` → error generico
+- `PUT /users/avatar` — cambia avatar (Module I / Fase 9)
 
 **Navegacion:**
 - Boton retroceso → Home

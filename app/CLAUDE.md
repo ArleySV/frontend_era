@@ -361,6 +361,7 @@ entre frontend y backend).
 ## 10. Estado actual de este repositorio
 
 **Fase 0 completada.** **Fase 1 completada.** **Fase 2 completada.**
+**Fase 3 completada.**
 
 ### Fase 0 — Preparación del entorno
 
@@ -456,9 +457,56 @@ entre frontend y backend).
   sincronizadas desde `BACKEND_ERA/docs`, con nota de procedencia; los diseños de
   pantallas están en `docs/decisiones-tecnicas.md` §10–16).
 
+### Fase 3 — Perfil / Mi cuenta (completada 2026-08-28)
+
+**Plan vinculante:** `docs/fase-03-perfil-analisis.md`, decisiones D-23…D-30.
+
+- **Repository:** `UserRepository` (interfaz: `obtenerPerfil()` /
+  `actualizarNombreUsuario()`) + `RemoteUserRepository` (`@Singleton` con wrapper
+  `llamar`+`aEraError` replicado de `RemoteAuthRepository`).
+- **Errores:** `SesionExpirada`, `PerfilNoEncontrado` añadidos a `EraError` +
+  ramas `UNAUTHORIZED`, `NOT_FOUND`, `INVALID_REQUEST` en `ErrorMapper.kt`
+  (`INVALID_REQUEST` → "Solicitud inválida") + `when` exhaustivo en
+  `MensajeError.kt`. 401/403 del GET y del PATCH cierran sesión local (regla §5).
+- **Sesión:** inyecta `SesionRepository` (Fase 2) para el cierre silencioso de
+  sesión ante 401/403.
+- **ViewModel:** `MiCuentaViewModel` (@HiltViewModel, `MiCuentaUiState`,
+  `MiCuentaEvento`); 409 CONFLICT → error inline en el Dialog de username.
+- **Componentes (nuevos):** `SettingsHeader` (cabecera gris reutilizable),
+  `SettingsCard` + `SettingsCardRow` (tarjeta con filas settings reutilizables
+  por Ajustes/FAQ/Eliminar cuenta).
+- **Pantallas:** `MiCuentaScreen` + `MiCuentaContent` (`GET /me` → 5 campos;
+  Dialog de edición de username). Subtítulos: ruta `EraRoutes.PERFIL = "perfil"`,
+  botón "Mi cuenta" en `HomePlaceholderScreen`.
+- **Token Settings:** +6 en `Color.kt` (`ColorSettingsHeaderBg`, `ColorSettingsBackBg`,
+  `ColorSettingsBackIcon`, `ColorSettingsLabel`, `ColorDivider`, `ColorCardBorder`).
+- **Validators:** + `formatearFechaISO(iso)` (mismo `ResolverStyle.STRICT`).
+- **DI:** + `@Binds` de `UserRepository` → `RemoteUserRepository`.
+- **Tests:** 123 verdes (93 previos + UserRepository MockWebServer 13 +
+  MiCuentaViewModel 12 + ErrorMapper 3 + Validators 2). `assembleDebug` y
+  `assembleDebugAndroidTest` BUILD SUCCESSFUL.
+- **Mejora visual aplicada 2026-08-28** (acta §14.6): filas con icono (círculo
+  40dp + divisor), avatar cabalgando el borde superior de la tarjeta (anillo
+  blanco + sombra), título de cabecera centrado.
+
+**Pendiente:**
+
+- androidTest de Fase 3 (`MiCuentaScreenTest` 13 + `HomePlaceholderScreenTest`)
+  **solo compilados** vía `assembleDebugAndroidTest`; su ejecución
+  `connectedDebugAndroidTest` requiere emulador/dispositivo (ninguno conectado).
+- Reemplazar el placeholder de `NetworkModule.BASE_URL` por la URL real
+  del backend.
+- `ClickableText` (deprecado) → migrar a `Text` + `LinkAnnotation` cuando
+  la API estable lo soporte (Fase 1–2).
+- Capa `data/` (Room: entities, DAOs, database) — llega con la Fase 7.
+- Anexar prototipos JPG/PDF a `docs/prototipos/` (los requisitos funcionales/no
+  funcionales, casos de uso e historias de usuario ya están anexados como copias
+  sincronizadas desde `BACKEND_ERA/docs`, con nota de procedencia; los diseños de
+  pantallas están en `docs/decisiones-tecnicas.md` §10–16).
+
 Control de versiones: repositorio publicado en GitHub (`ArleySV/frontend_era`,
 rama `main`, commit inicial `43d3a0b`).
 
-**Próximo paso:** Fase 3 — Perfil / Mi cuenta (Módulo D: `GET /me`, `PATCH /me`).
-Depende de Fase 2 (JWT habilitado). Plan vinculante: `docs/` fase 3 + decisiones
-D-XX. Detener para revisión del propietario al completar cada capa.
+**Próximo paso:** Fase 4 — Logout (F, `POST /logout`, stateless: el cliente borra
+el JWT). Depende de Fase 2 (JWT habilitado). Detener para revisión del propietario
+al completar cada capa.
