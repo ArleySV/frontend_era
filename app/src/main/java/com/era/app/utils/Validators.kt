@@ -20,6 +20,8 @@ object Validators {
     private val CEDULA_REGEX = Regex("^[A-Za-z0-9]{6,20}$")
     private val FECHA_DISPLAY_FORMAT =
         DateTimeFormatter.ofPattern("dd/MM/uuuu").withResolverStyle(ResolverStyle.STRICT)
+    private val FECHA_ISO_TO_DISPLAY =
+        DateTimeFormatter.ofPattern("dd/MM/uuuu").withResolverStyle(ResolverStyle.STRICT)
 
     fun isValidEmail(value: String): Boolean =
         value.length <= EMAIL_MAX_LENGTH && EMAIL_REGEX.matches(value)
@@ -57,4 +59,11 @@ object Validators {
         val edad = Period.between(fecha, hoy).years
         return if (edad in EDAD_MINIMA..EDAD_MAXIMA) fecha else null
     }
+
+    fun formatearFechaISO(iso: String): String? =
+        try {
+            LocalDate.parse(iso).format(FECHA_ISO_TO_DISPLAY)
+        } catch (e: DateTimeParseException) {
+            null
+        }
 }

@@ -12,6 +12,7 @@ import androidx.navigation.navigation
 import com.era.app.ui.login.HomePlaceholderScreen
 import com.era.app.ui.login.HomePlaceholderViewModel
 import com.era.app.ui.login.LoginScreen
+import com.era.app.ui.perfil.MiCuentaScreen
 import com.era.app.ui.register.RegistroPaso1Screen
 import com.era.app.ui.register.RegistroPaso2Screen
 import com.era.app.ui.register.RegistroPaso3Screen
@@ -40,8 +41,20 @@ fun EraNavHost(
         composable(EraRoutes.HOME_PLACEHOLDER) {
             val vm: HomePlaceholderViewModel = hiltViewModel()
             HomePlaceholderScreen(
+                onNavigatePerfil = { navController.navigate(EraRoutes.PERFIL) },
                 onCerrarSesion = {
                     vm.cerrarSesion()
+                    navController.navigate(EraRoutes.LOGIN) {
+                        popUpTo(0) { inclusive = true }
+                    }
+                },
+            )
+        }
+
+        composable(EraRoutes.PERFIL) {
+            MiCuentaScreen(
+                onVolver = { navController.popBackStack() },
+                onNavegarALogin = {
                     navController.navigate(EraRoutes.LOGIN) {
                         popUpTo(0) { inclusive = true }
                     }

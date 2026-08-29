@@ -15,6 +15,8 @@ fun EraError.mensajeUsuario(): String = when (this) {
     is EraError.CredencialesInvalidas -> "Correo/usuario o contraseña incorrectos"
     is EraError.CuentaBloqueada -> "Cuenta bloqueada temporalmente"
     is EraError.CuentaInactiva -> "Tu cuenta fue desactivada"
+    is EraError.SesionExpirada -> "Tu sesión expiró. Vuelve a iniciar sesión"
+    is EraError.PerfilNoEncontrado -> "No se pudo cargar el perfil"
 }
 
 fun mensajeCampo(campo: CampoRegistro): String = when (campo) {
@@ -53,5 +55,7 @@ private infix fun CampoRegistro.mapsTo(error: EraError): Boolean = when (error) 
     is EraError.Desconocido,
     is EraError.CredencialesInvalidas,
     is EraError.CuentaBloqueada,
-    is EraError.CuentaInactiva -> false
+    is EraError.CuentaInactiva,
+    is EraError.SesionExpirada,
+    is EraError.PerfilNoEncontrado -> false
 }

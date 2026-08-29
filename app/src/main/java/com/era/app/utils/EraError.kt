@@ -10,6 +10,8 @@ sealed class EraError {
     data object CredencialesInvalidas : EraError()
     data object CuentaBloqueada : EraError()
     data object CuentaInactiva : EraError()
+    data object SesionExpirada : EraError()
+    data object PerfilNoEncontrado : EraError()
     data object ErrorServidor : EraError()
     data object ErrorConexion : EraError()
     data class Desconocido(val codigoHttp: Int?) : EraError()

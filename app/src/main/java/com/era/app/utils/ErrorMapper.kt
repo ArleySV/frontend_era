@@ -11,6 +11,9 @@ object ErrorMapper {
             "VALIDATION_ERROR" -> EraError.Validacion(
                 detalles = body.details.orEmpty().map { it.message }
             )
+            "INVALID_REQUEST" -> EraError.Validacion(
+                detalles = listOf("Solicitud inválida")
+            )
             "EMAIL_ALREADY_REGISTERED" -> EraError.CorreoRegistrado
             "EMAIL_LOCKED" -> EraError.CorreoBloqueado
             "CONFLICT" -> EraError.UsuarioEnUso
@@ -19,6 +22,8 @@ object ErrorMapper {
             "INVALID_CREDENTIALS" -> EraError.CredencialesInvalidas
             "ACCOUNT_LOCKED" -> EraError.CuentaBloqueada
             "ACCOUNT_INACTIVE" -> EraError.CuentaInactiva
+            "UNAUTHORIZED" -> EraError.SesionExpirada
+            "NOT_FOUND" -> EraError.PerfilNoEncontrado
             "INTERNAL_ERROR" -> EraError.ErrorServidor
             else -> EraError.Desconocido(status)
         }

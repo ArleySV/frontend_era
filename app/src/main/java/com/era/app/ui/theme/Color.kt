@@ -54,3 +54,11 @@ val ColorAvatarBorderDefault = Color(0xFFE0E0E0)
 
 // ── §14.7 Icono sobre paso 3 (verificación OTP) ─────────────────────────
 val ColorOtpIconBg = Color(0xFFBDBDBD)
+
+// ── §14.9/§14.10 Settings (Mi cuenta, Ajustes, FAQ, Eliminar cuenta) ────
+val ColorSettingsHeaderBg = Color(0xFF767676)
+val ColorSettingsBackBg = Color(0xFFF2F2F2)
+val ColorSettingsBackIcon = Color(0xFF2C2C2C)
+val ColorSettingsLabel = Color(0xFF2D3142)
+val ColorDivider = Color(0xFFD8D8D8)
+val ColorCardBorder = Color(0xFFE6E6E6)

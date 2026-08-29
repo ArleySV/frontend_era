@@ -53,6 +53,23 @@ class ErrorMapperTest {
     }
 
     @Test
+    fun `codigos de fase tres perfil mapean a su tipo`() {
+        assertEquals(EraError.SesionExpirada, ErrorMapper.desdeHttp(401, body("UNAUTHORIZED")))
+        assertEquals(EraError.PerfilNoEncontrado, ErrorMapper.desdeHttp(404, body("NOT_FOUND")))
+    }
+
+    @Test
+    fun `INVALID_REQUEST mapea a Validacion con mensaje por defecto`() {
+        val resultado = ErrorMapper.desdeHttp(400, body("INVALID_REQUEST"))
+        assertEquals(EraError.Validacion(listOf("Solicitud inválida")), resultado)
+    }
+
+    @Test
+    fun `CONFLICT sigue mapeando a UsuarioEnUso regresion registro`() {
+        assertEquals(EraError.UsuarioEnUso, ErrorMapper.desdeHttp(409, body("CONFLICT")))
+    }
+
+    @Test
     fun `codigo desconocido conserva status y cuerpo nulo tambien`() {
         assertEquals(EraError.Desconocido(418), ErrorMapper.desdeHttp(418, body("TEAPOT")))
         assertEquals(EraError.Desconocido(503), ErrorMapper.desdeHttp(503, null))

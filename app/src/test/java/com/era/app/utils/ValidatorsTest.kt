@@ -126,4 +126,17 @@ class ValidatorsTest {
         assertNull(Validators.parseFechaNacimientoDesdeDisplay("10-05-2016", hoy))
         assertNull(Validators.parseFechaNacimientoDesdeDisplay("", hoy))
     }
+
+    @Test
+    fun `formatearFechaISO iso a dia barra mes barra anio`() {
+        assertEquals("12/04/2018", Validators.formatearFechaISO("2018-04-12"))
+        assertEquals("03/01/2020", Validators.formatearFechaISO("2020-01-03"))
+    }
+
+    @Test
+    fun `formatearFechaISO rechaza formatos invalidos`() {
+        assertNull(Validators.formatearFechaISO("invalid"))
+        assertNull(Validators.formatearFechaISO(""))
+        assertNull(Validators.formatearFechaISO("12/04/2018"))
+    }
 }
