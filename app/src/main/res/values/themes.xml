@@ -1,5 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <style name="Theme.ERA" parent="android:Theme.Material.Light.NoActionBar" />
+    <style name="Theme.ERA" parent="android:Theme.Material.Light.NoActionBar">
+        <item name="android:statusBarColor">@color/era_primary</item>
+        <item name="android:windowLightStatusBar">false</item>
+        <item name="android:windowDrawsSystemBarBackgrounds">true</item>
+    </style>
 </resources>

@@ -33,16 +33,16 @@ fun LoginButton(
     Button(
         onClick = onClick,
         enabled = enabled && !cargando,
-        shape = RoundedCornerShape(25.5.dp),
+        shape = RoundedCornerShape(46.dp),
         colors = ButtonDefaults.buttonColors(
             containerColor = ColorPrimary,
-            disabledContainerColor = ColorPrimary.copy(alpha = 0.5f),
+            disabledContainerColor = ColorPrimary.copy(alpha = 0.6f),
             contentColor = ColorTextWhite,
-            disabledContentColor = ColorTextWhite.copy(alpha = 0.5f),
+            disabledContentColor = ColorTextWhite.copy(alpha = 0.6f),
         ),
         modifier = modifier
             .fillMaxWidth()
-            .height(51.dp),
+            .height(56.dp),
     ) {
         if (cargando) {
             CircularProgressIndicator(
@@ -53,7 +53,7 @@ fun LoginButton(
         } else {
             Text(
                 text = text,
-                fontSize = 16.sp,
+                fontSize = 17.sp,
                 fontWeight = FontWeight.Bold,
             )
         }

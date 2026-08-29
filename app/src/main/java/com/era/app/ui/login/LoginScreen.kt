@@ -1,18 +1,24 @@
 package com.era.app.ui.login
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.heightIn
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.ClickableText
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
+import androidx.compose.material3.LocalTextStyle
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -21,6 +27,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
@@ -39,6 +46,8 @@ import com.era.app.ui.components.LoginButton
 import com.era.app.ui.components.LoginInputPill
 import com.era.app.ui.theme.ColorError
 import com.era.app.ui.theme.ColorPrimary
+import com.era.app.ui.theme.ColorSurface
+import com.era.app.ui.theme.ColorTextBody
 import com.era.app.ui.theme.ERATheme
 import com.era.app.utils.EraError
 
@@ -61,20 +70,39 @@ fun LoginContent(
 ) {
     Box(modifier = modifier.fillMaxSize()) {
         Column(
-            modifier = Modifier.fillMaxSize(),
+            modifier = Modifier
+                .fillMaxSize()
+                .background(ColorSurface),
             horizontalAlignment = Alignment.CenterHorizontally,
         ) {
-            HeroLogin()
+            HeroLogin(modifier = Modifier.fillMaxWidth())
 
-            Column(
+            BoxWithConstraints(
                 modifier = Modifier
                     .fillMaxWidth()
                     .weight(1f)
-                    .verticalScroll(rememberScrollState())
-                    .padding(horizontal = 28.dp),
-                horizontalAlignment = Alignment.CenterHorizontally,
+                    .offset(y = (-20).dp)
+                    .clip(RoundedCornerShape(topStart = 28.dp, topEnd = 28.dp))
+                    .background(ColorSurface),
             ) {
-                Spacer(modifier = Modifier.height(16.dp))
+                Column(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .verticalScroll(rememberScrollState())
+                        .heightIn(min = maxHeight)
+                        .padding(horizontal = 28.dp),
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                ) {
+                Text(
+                    text = "Inicio de sesión",
+                    fontSize = 38.sp,
+                    fontWeight = FontWeight.Bold,
+                    color = ColorPrimary,
+                    textAlign = TextAlign.Center,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(top = 28.dp, bottom = 28.dp),
+                )
 
                 errorGeneral?.let { error ->
                     val mensaje = when (error) {
@@ -98,19 +126,8 @@ fun LoginContent(
                         textAlign = TextAlign.Center,
                         modifier = Modifier.fillMaxWidth(),
                     )
-                    Spacer(modifier = Modifier.height(8.dp))
+                    Spacer(modifier = Modifier.height(12.dp))
                 }
-
-                Text(
-                    text = "Inicio de sesión",
-                    fontSize = 36.sp,
-                    fontWeight = FontWeight.Bold,
-                    color = ColorPrimary,
-                    textAlign = TextAlign.Center,
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(bottom = 36.dp),
-                )
 
                 LoginInputPill(
                     value = usuarioOCorreo,
@@ -118,10 +135,12 @@ fun LoginContent(
                     placeholder = "ID/E-mail",
                     leadingIcon = EraIcons.EmailOutline,
                     isError = campoConError == CampoLogin.USUARIO_O_CORREO,
-                    modifier = Modifier.widthIn(max = 276.dp),
+                    modifier = Modifier
+                        .widthIn(max = 300.dp)
+                        .height(58.dp),
                 )
 
-                Spacer(modifier = Modifier.height(12.dp))
+                Spacer(modifier = Modifier.height(20.dp))
 
                 LoginInputPill(
                     value = contrasena,
@@ -141,10 +160,12 @@ fun LoginContent(
                     } else {
                         PasswordVisualTransformation()
                     },
-                    modifier = Modifier.widthIn(max = 276.dp),
+                    modifier = Modifier
+                        .widthIn(max = 300.dp)
+                        .height(58.dp),
                 )
 
-                Spacer(modifier = Modifier.height(8.dp))
+                Spacer(modifier = Modifier.height(16.dp))
 
                 ClickableText(
                     text = buildAnnotatedString {
@@ -155,23 +176,29 @@ fun LoginContent(
                         pop()
                     },
                     onClick = { onOlvidasteContrasena() },
+                    style = LocalTextStyle.current.copy(
+                        fontSize = 16.sp,
+                        textAlign = TextAlign.Center,
+                    ),
                     modifier = Modifier.padding(vertical = 8.dp),
                 )
 
-                Spacer(modifier = Modifier.height(8.dp))
+                Spacer(modifier = Modifier.height(24.dp))
 
                 LoginButton(
                     text = "Iniciar sesión",
                     onClick = onLoginClick,
                     enabled = usuarioOCorreo.isNotBlank() && contrasena.isNotBlank(),
                     cargando = cargando,
-                    modifier = Modifier.widthIn(max = 276.dp),
+                    modifier = Modifier.widthIn(max = 300.dp),
                 )
 
-                Spacer(modifier = Modifier.height(24.dp))
+                Spacer(modifier = Modifier.weight(1f))
 
                 val annotatedText = buildAnnotatedString {
-                    append("¿No tienes cuenta? ")
+                    withStyle(style = SpanStyle(color = ColorTextBody, fontWeight = FontWeight.Normal)) {
+                        append("¿No tienes cuenta? ")
+                    }
                     pushStringAnnotation(tag = "registro", annotation = "registro")
                     withStyle(style = SpanStyle(color = ColorPrimary, fontWeight = FontWeight.Bold)) {
                         append("Regístrate")
@@ -181,8 +208,10 @@ fun LoginContent(
                 ClickableText(
                     text = annotatedText,
                     onClick = { onNavegarARegistro() },
-                    modifier = Modifier.padding(bottom = 32.dp),
+                    style = LocalTextStyle.current.copy(fontSize = 16.sp),
+                    modifier = Modifier.padding(bottom = 44.dp),
                 )
+                }
             }
         }
 

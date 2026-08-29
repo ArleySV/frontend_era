@@ -10,14 +10,13 @@ import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.era.app.ui.theme.ColorError
 import com.era.app.ui.theme.ColorPrimary
-import com.era.app.ui.theme.ColorSurface
 import com.era.app.ui.theme.ColorTextMuted
 import com.era.app.ui.theme.ColorTextWhite
 import com.era.app.ui.theme.ERATheme
@@ -57,7 +56,7 @@ fun LoginInputPill(
             {
                 IconButton(
                     onClick = onTrailingIconClick,
-                    modifier = Modifier.size(44.dp),
+                    modifier = Modifier.size(48.dp),
                 ) {
                     Icon(
                         imageVector = trailingIcon,
@@ -72,12 +71,12 @@ fun LoginInputPill(
         isError = isError,
         keyboardOptions = KeyboardOptions(keyboardType = keyboardType),
         visualTransformation = visualTransformation,
-        shape = RoundedCornerShape(25.5.dp),
+        shape = RoundedCornerShape(46.dp),
         colors = OutlinedTextFieldDefaults.colors(
             focusedContainerColor = ColorTextWhite,
             unfocusedContainerColor = ColorTextWhite,
-            focusedBorderColor = if (isError) ColorError else ColorSurface,
-            unfocusedBorderColor = if (isError) ColorError else ColorSurface,
+            focusedBorderColor = Color.Transparent,
+            unfocusedBorderColor = Color.Transparent,
             cursorColor = ColorPrimary,
         ),
         modifier = modifier,
