@@ -118,25 +118,26 @@ rompería la app. Cuando Fase 5 esté lista, se reemplaza el Snackbar por
 | Componente | Descripción | Patrón §13 | Uso |
 |---|---|---|---|
 | `HeroLogin.kt` | Sección verde superior con SVGs decorativos, título y subtítulo | §13.1.1 (`hero-login`) | Solo pantalla Login |
-| `LoginInputPill.kt` | Input pill (radio 25.5dp, fondo blanco, icono izq/der, toggle ojo) | §13.3.1 (`input-login`) | Login (email/contraseña) |
+| `LoginInputPill.kt` | Input pill (radio 46dp, fondo blanco, icono izq/der, toggle ojo) | §13.3.1 (`input-login`) | Login (email/contraseña) |
 | `LoginButton.kt` | Botón primario pill para "Iniciar sesión" | §13.2.1 (`btn-primary-pill`) | Login |
 
 **Justificación de no reusar `EraTextField`:** el input de registro (§13.3.2) tiene radio 10dp,
 fondo `ColorPrimaryPale`, label arriba y asterisco rojo. El input de login (§13.3.1) tiene
-radio 25.5dp (pill), fondo blanco, borde `ColorSurface`, icono integrado sin label. Son
+radio 46dp (pill), fondo blanco, borde `ColorSurface`, icono integrado sin label. Son
 componentes visualmente distintos — forzar la reutilización requeriría tantos parámetros
 opcionales que el componente se vuelve ilegible.
 
 ### D-21 — SVGs decorativos del hero-login
 
 **Decisión:** Implementar los 3 SVGs como Vector Drawables en `res/drawable-nodpi/` y
-posicionarlos con `Modifier.graphicsLayer { translationX/Y }` dentro del `HeroLogin`.
+posicionarlos con `Modifier.align` + `Modifier.offset` + `padding` dentro del `HeroLogin`
+(el `Modifier.graphicsLayer` queda como no-op de soporte).
 
 | SVG | Archivo fuente | Ancho aprox. | Posición |
 |---|---|---|---|
-| `signo_igual.svg` | Prototipo HTML | ~140dp | Arriba-izquierda |
-| `signo_abc123.svg` | Prototipo HTML | ~170dp | Arriba-derecha |
-| `signomas.svg` | Prototipo HTML | ~140dp | Abajo-derecha |
+| `signo_igual.svg` | Prototipo HTML | 150dp | Arriba-izquierda, `padding(start=16, top=24)` |
+| `signo_abc123.svg` | Prototipo HTML | 150dp | Arriba-derecha, `offset(x=-90)`, `padding(top=24, end=16)` |
+| `signomas.svg` | Prototipo HTML | 140dp | Abajo-derecha, `offset(y=-70)` (mitad de su altura), `padding(end=16)` |
 
 **Por qué Vector Drawables y no Compose Canvas:** los SVGs son decorativos complejos
 (múltiples paths, gradientes). Reimplementarlos en Canvas Compose sería trabajo enorme
@@ -253,24 +254,26 @@ class LoginViewModel @Inject constructor(
 ```
 ┌─────────────────────────────────────┐
 │          HeroLogin.kt               │  ColorPrimary fondo, SVGs decorativos
-│  ¡Bienvenidos!                      │  32sp Light, blanco
-│  ERA - Educación, Repaso...         │  16sp Light, blanco 85%
-├─────────────────────────────────────┤  ← Panel gris superpuesto (RadiusPanel 30dp)
-│                                     │
+│                                     │  alto 32% (tope 300dp)
+│  ¡Bienvenidos!                      │  30sp Medium, blanco
+│  ERA - Educación, Repaso...         │  16sp Regular, blanco 85%
+├─────────────────────────────────────┤  ← Panel gris superpuesto (esquinas sup. 28dp,
+│                                     │    offset(y=-20))
 │  [mensaje de estado si aplica]      │  §13.10.2 (fondo tintado, 14sp) — arriba del form
 │                                     │
-│     Inicio de sesión                │  36sp Bold, ColorPrimary
+│     Inicio de sesión                │  38sp Bold, ColorPrimary
 │                                     │
-│  [  ✉  ID/E-mail              ]    │  LoginInputPill (max 276dp, centrado)
+│  [  ✉  ID/E-mail              ]    │  LoginInputPill (max 300dp, alto 58dp, radio 46dp)
 │                                     │
 │  [  🔒  Contraseña          👁 ]   │  LoginInputPill con toggle ojo
 │                                     │
 │      ¿Olvidaste la contraseña?     │  16sp Medium, ColorPrimary, centrado
 │                                     │  → Snackbar "Próximamente" (D-19)
 │                                     │
-│  [     Iniciar sesión     ]         │  LoginButton (pill, ColorPrimary)
+│  [     Iniciar sesión     ]         │  LoginButton (pill, alto 56dp, texto 17sp)
 │                                     │
 │  ¿No tienes cuenta? Regístrate     │  16sp, "Regístrate" Bold+ColorPrimary
+│                                     │  anclado al fondo (Spacer weight 1f) bottom 44dp
 └─────────────────────────────────────┘
 ```
 

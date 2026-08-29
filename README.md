@@ -59,14 +59,14 @@ com.era.app/
 
 ## Estado actual
 
-**Fase 0 completada.** Detalle del avance fase por fase:
+**Fase 0, 1 y 2 completadas.** Detalle del avance fase por fase:
 
 | Fase | Módulo | Estado |
 |---|---|---|
 | 0 | Preparación del entorno | ✅ Completada |
-| 1 | Registro + Verificación OTP | ⬜ Pendiente — **siguiente paso** |
-| 2 | Login | ⬜ Pendiente |
-| 3 | Perfil / Mi cuenta | ⬜ Pendiente |
+| 1 | Registro + Verificación OTP | ✅ Completada (2026-08-23) |
+| 2 | Login | ✅ Completada (2026-08-27) |
+| 3 | Perfil / Mi cuenta | ⬜ Pendiente — **siguiente paso** |
 | 4 | Logout | ⬜ Pendiente |
 | 5 | Recuperación de contraseña | ⬜ Pendiente |
 | 6 | Eliminar cuenta | ⬜ Pendiente |
@@ -87,6 +87,12 @@ Implementado hasta ahora:
   logging HTTP nivel `BASIC` en debug (nunca loguear cuerpos con contraseña/OTP).
 - Tema Compose: tokens ERA aplicados (paleta, tipografía y radios de
   `docs/decisiones-tecnicas.md` §10; `dynamicColor` desactivado).
+- **Fase 1 — Registro + Verificación OTP:** pantallas (`RegistroPaso1/2/3`,
+  `VerificarEmail`, `RegistroExitoso`), ViewModels, componentes COMMON y navegación;
+  74 tests verdes.
+- **Fase 2 — Login:** pantalla de login, `LoginViewModel`, `HeroLogin` con los 3 SVGs
+  decorativos (`signo_igual`, `signo_abc123`, `signomas`), `LoginInputPill`, `LoginButton`;
+  93 tests verdes.
 
 ## Compilar y ejecutar
 
@@ -119,6 +125,7 @@ de recuperación de contraseña).
 | [`docs/casos-de-uso.md`](docs/casos-de-uso.md) | CU-01…12 (copia sincronizada del backend) |
 | [`docs/historias-de-usuario.md`](docs/historias-de-usuario.md) | HU-01…15 (copia sincronizada del backend) |
 | [`docs/fase-01-registro-analisis.md`](docs/fase-01-registro-analisis.md) | Análisis y diseño de la Fase 1 — Registro + Verificación OTP |
+| [`docs/fase-02-login-analisis.md`](docs/fase-02-login-analisis.md) | Análisis y diseño de la Fase 2 — Login |
 | `docs/prototipos/` | JPG/PDF de diseño — *pendiente de anexar* (diseño documentado en `decisiones-tecnicas.md`) |
 
 El contrato completo de los 16 endpoints vive en el `README.md` del backend

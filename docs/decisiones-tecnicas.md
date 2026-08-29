@@ -254,24 +254,32 @@ implementa como `ModalDrawer` o `NavigationRail` segun el breakpoint.
 
 #### 13.1.1 Hero login (`hero-login`)
 
-- Fondo `ColorPrimary` (#037373), alto minimo 283dp
-- Padding 44/28/90/28 (top/h/bottom/h)
-- 3 SVGs decorativos posicionados absolutos (no interactivos):
-  - `signo_igual`: arriba-izquierda, ~140dp ancho
-  - `signo_abc123`: arriba-derecha, ~170dp ancho
-  - `signomas`: abajo-derecha, ~140dp ancho
-- Titulo "Bienvenidos!" — 32sp **Light**, `ColorTextWhite`, margin-top ~130dp
-- Subtitulo — 16sp Light, `ColorTextWhite` 85%, max-width ~215dp, line-height 1.5
+- Fondo `ColorPrimary` (#037373); alto = **32% del alto disponible** del contenedor
+  (`BoxWithConstraints` → `(maxHeight * 0.32f)`), **tope 300dp**
+  (`coerceAtMost(300.dp)`)
+- 3 SVGs decorativos posicionados absolutos (no interactivos), dibujados detrás del texto:
+  - `signo_igual`: arriba-izquierda, ancho **150dp**, `padding(start=16, top=24)`
+  - `signo_abc123`: arriba-derecha, ancho **150dp**, `offset(x=-90)` (corrido hacia el
+    centro del hero), `padding(top=24, end=16)`
+  - `signomas`: abajo-derecha, ancho **140dp**, `offset(y=-70)` (subido **la mitad de su
+    propia altura**), `padding(end=16)`
+- Titulo "¡Bienvenidos!" — **30sp Medium** (override inline de `HeroTitle`),
+  `ColorTextWhite`, `maxLines=1`
+- Subtitulo "ERA - Educación, Repaso y Aprendizaje" — **16sp Regular** (override inline
+  de `BodyBase`), `ColorTextWhite` 85%. Sin ancho fijo.
+- Titulo y subtitulo anclados juntos `BottomStart` (dentro del hero),
+  `padding(start=24, bottom=40)`
 - **Uso:** Solo pantalla Login
 
 ```
 ┌─────────────────────────────────────────┐
-│  ≈≈  (signo_igual)      (signo_abc)    │
+│  ≈≈  (signo_igual)   (signo_abc123)     │  abc123 corrido hacia el centro
 │                                         │
+│                            (+)          │  signomas subido (mitad de su altura)
 │                                         │
-│  ¡Bienvenidos!                          │  32sp Light, blanco
-│  ERA - Educación, Repaso y Aprendizaje  │  16sp Light, blanco 85%
-│                                   (+)   │
+│  ¡Bienvenidos!                          │  30sp Medium, blanco
+│  ERA - Educación, Repaso y Aprendizaje  │  16sp Regular, blanco 85%
+│                                         │  anclados BottomStart (start 24, bottom 40)
 │▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓│  panel gris se superpone
 └─────────────────────────────────────────┘
 ```
@@ -912,36 +920,37 @@ Estilos tipograficos del sistema (Roboto, fuente del sistema Android):
 
 **Fondo general:** `ColorPrimary` (#037373).
 
-#### Seccion superior (Hero) — altura minima 283dp, padding 44/28/90/28 (top/h/bottom/h)
+#### Seccion superior (Hero) — alto 32% del alto disponible, tope 300dp (`coerceAtMost`)
 
 ```
 ┌─────────────────────────────────────────┐
-│  ≈≈  (signo_igual)      (signo_abc)    │  SVGs decorativos posicionados
+│  ≈≈  (signo_igual)   (signo_abc123)     │  SVGs decorativos posicionados
 │                                         │  absolutos, no interactivos
-│                                         │
-│  ¡Bienvenidos!                          │  32sp Light, blanco, margin-top ~130dp
-│  ERA - Educacion, Repaso y Aprendizaje  │  16sp Light, blanco, max-width ~215dp
-│                                   (+)   │  signomas.svg abajo-derecha
+│                            (+)          │  abc123 corrido hacia el centro (offset x=-90)
+│                                         │  signomas subido (offset y=-70 = mitad de altura)
+│  ¡Bienvenidos!                          │  30sp Medium, blanco
+│  ERA - Educacion, Repaso y Aprendizaje  │  16sp Regular, blanco 85%
+│                                         │  anclados BottomStart (start 24, bottom 40)
 │▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓│  ← panel gris se superpone aqui
 ```
 
 - 3 imagenes decorativas SVG flotantes, posicion absoluta:
-  - `signo_igual` (rayas): arriba-izquierda, ~140dp ancho
-  - `signo_abc123`: arriba-derecha, ~170dp ancho
-  - `signomas` (+): abajo-derecha, ~140dp ancho
-- Titulo "Bienvenidos!" — 32sp, peso **Light**, blanco, margin-top ~130dp
-- Subtitulo "ERA - Educacion, Repaso y Aprendizaje" — 16sp, Light, blanco, max-width ~215dp, line-height 1.5
+  - `signo_igual` (rayas): arriba-izquierda, ancho 150dp, `padding(start=16, top=24)`
+  - `signo_abc123`: arriba-derecha, ancho 150dp, `offset(x=-90)`, `padding(top=24, end=16)`
+  - `signomas` (+): abajo-derecha, ancho 140dp, `offset(y=-70)` (mitad de su altura), `padding(end=16)`
+- Titulo "Bienvenidos!" — 30sp, peso **Medium**, blanco, `maxLines=1`
+- Subtitulo "ERA - Educacion, Repaso y Aprendizaje" — 16sp, Regular, blanco 85%, sin ancho fijo
 
 #### Panel de formulario (tarjeta gris superpuesta)
 
 ```
 ┌─────────────────────────────────────────┐
 │                                         │
-│     Inicio de sesion                    │  36sp Bold, ColorPrimary, centrado
-│                                         │  margin-bottom 36dp
+│     Inicio de sesion                    │  38sp Bold, ColorPrimary, centrado
+│                                         │  padding top/bottom 28dp
 │  ┌─────────────────────────────────┐    │
-│  │ ✉  ID/E-mail                    │    │  pill, fondo blanco, alto 51dp
-│  └─────────────────────────────────┘    │  max-width 276dp, centrado
+│  │ ✉  ID/E-mail                    │    │  pill, alto 58dp
+│  └─────────────────────────────────┘    │  max-width 300dp, centrado
 │                                         │  icono sobre izq (16dp margen)
 │  ┌─────────────────────────────────┐    │  16sp Medium, ColorTextMuted
 │  │ 🔒  Contraseña            👁   │    │  pill, icono candado izq
@@ -949,22 +958,25 @@ Estilos tipograficos del sistema (Roboto, fuente del sistema Android):
 │                                         │
 │      ¿Olvidaste la contraseña?          │  16sp Medium, ColorPrimary, centrado
 │                                         │  area tactil min 44dp
-│      [   Iniciar sesión   ]             │  pill, max-width 276dp, alto 51dp
+│      [   Iniciar sesión   ]             │  pill, max-width 300dp, alto 56dp
 │                                         │  fondo ColorPrimary, texto blanco
-│                                         │  16sp Bold, sombra teal
+│                                         │  17sp Bold, disabled alpha 0.6
 │                                         │
 │  ¿No tienes cuenta? Regístrate          │  16sp, centrado
 │                                         │  "Regístrate" en Bold + ColorPrimary
-│                                         │
+│                                         │  anclado al fondo (Spacer weight 1f)
+│                                         │  bottom 44dp
 └─────────────────────────────────────────┘
 ```
 
-- Fondo `ColorSurface` (#D9D9D9), esquinas superiores redondeadas 30dp (`RadiusPanel`)
-- Se superpone al hero con offset negativo ~-42dp, sombra sutil hacia arriba
-- Padding: 40dp arriba, 28dp lados, 52dp abajo
+- Fondo `ColorSurface` (#D9D9D9), esquinas superiores redondeadas **28dp**
+- Se superpone al hero con **offset(y = -20dp)**
+- Titulo "Inicio de sesión" con padding top y bottom 28dp; lados del panel 28dp
+- Footer "¿No tienes cuenta? Regístrate" anclado al fondo mediante
+  `Spacer(weight=1f)` y `bottom=44dp` (sin tocar el borde)
 
 **Campo email/ID:**
-- Pill (radio 25.5dp), fondo blanco, alto 51dp, max-width 276dp centrado
+- Pill (radio 46dp), alto 58dp, max-width 300dp centrado
 - Icono de sobre a la izquierda (16dp margen)
 - Placeholder "ID/E-mail", texto 16sp Medium, color `ColorTextMuted`
 
@@ -979,13 +991,14 @@ Estilos tipograficos del sistema (Roboto, fuente del sistema Android):
 - Area tactil minima 44dp
 
 **Boton primario "Iniciar sesion":**
-- Pill, max-width 276dp, alto 51dp
-- Fondo `ColorPrimary`, texto blanco 16sp Bold
-- Sombra teal (teintada en `ColorPrimary` al 40% opacidad)
+- Pill, max-width 300dp, alto 56dp, shape 46dp
+- Fondo `ColorPrimary`, texto blanco 17sp Bold
+- Deshabilitado con `ColorPrimary` al 60% (alpha 0.6)
 
 **Texto inferior:**
 - "¿No tienes cuenta? **Registrate**" — centrado, 16sp
 - "Registrate" en negrita y color `ColorPrimary`
+- Anclado al fondo del panel (`Spacer(weight=1f)`) con `bottom=44dp`, sin tocar el borde
 
 **Mensaje de error de login (si aplica):**
 - Texto centrado 14sp Medium, color `ColorError`

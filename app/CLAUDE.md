@@ -448,6 +448,8 @@ entre frontend y backend).
   del backend.
 - Fase 1–2: `ClickableText` (deprecado) → migrar a `Text` + `LinkAnnotation` cuando
   la API estable lo soporte.
+- Ajustes visuales finales de Login aplicados 2026-08-28 (hero 32%, panel 28dp,
+  pills 300/58/46, botón 56/17).
 - Capa `data/` (Room: entities, DAOs, database) — llega con la Fase 7.
 - Anexar prototipos JPG/PDF a `docs/prototipos/` (los requisitos funcionales/no
   funcionales, casos de uso e historias de usuario ya están anexados como copias
