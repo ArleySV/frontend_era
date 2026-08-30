@@ -14,7 +14,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.text.ClickableText
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
@@ -28,13 +27,16 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.SpanStyle
+import androidx.compose.ui.text.LinkAnnotation
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.withLink
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -137,7 +139,8 @@ fun LoginContent(
                     isError = campoConError == CampoLogin.USUARIO_O_CORREO,
                     modifier = Modifier
                         .widthIn(max = 300.dp)
-                        .height(58.dp),
+                        .height(58.dp)
+                        .testTag("campoUsuario"),
                 )
 
                 Spacer(modifier = Modifier.height(20.dp))
@@ -162,24 +165,21 @@ fun LoginContent(
                     },
                     modifier = Modifier
                         .widthIn(max = 300.dp)
-                        .height(58.dp),
+                        .height(58.dp)
+                        .testTag("campoContrasena"),
                 )
 
                 Spacer(modifier = Modifier.height(16.dp))
 
-                ClickableText(
+                Text(
                     text = buildAnnotatedString {
-                        pushStringAnnotation(tag = "olvidaste", annotation = "olvidaste")
-                        withStyle(style = SpanStyle(color = ColorPrimary, fontWeight = FontWeight.Medium)) {
-                            append("¿Olvidaste la contraseña?")
+                        withLink(LinkAnnotation.Clickable(tag = "olvidaste") { onOlvidasteContrasena() }) {
+                            withStyle(style = SpanStyle(color = ColorPrimary, fontWeight = FontWeight.Medium)) {
+                                append("¿Olvidaste la contraseña?")
+                            }
                         }
-                        pop()
                     },
-                    onClick = { onOlvidasteContrasena() },
-                    style = LocalTextStyle.current.copy(
-                        fontSize = 16.sp,
-                        textAlign = TextAlign.Center,
-                    ),
+                    style = LocalTextStyle.current.copy(fontSize = 16.sp, textAlign = TextAlign.Center),
                     modifier = Modifier.padding(vertical = 8.dp),
                 )
 
@@ -199,15 +199,14 @@ fun LoginContent(
                     withStyle(style = SpanStyle(color = ColorTextBody, fontWeight = FontWeight.Normal)) {
                         append("¿No tienes cuenta? ")
                     }
-                    pushStringAnnotation(tag = "registro", annotation = "registro")
-                    withStyle(style = SpanStyle(color = ColorPrimary, fontWeight = FontWeight.Bold)) {
-                        append("Regístrate")
+                    withLink(LinkAnnotation.Clickable(tag = "registro") { onNavegarARegistro() }) {
+                        withStyle(style = SpanStyle(color = ColorPrimary, fontWeight = FontWeight.Bold)) {
+                            append("Regístrate")
+                        }
                     }
-                    pop()
                 }
-                ClickableText(
+                Text(
                     text = annotatedText,
-                    onClick = { onNavegarARegistro() },
                     style = LocalTextStyle.current.copy(fontSize = 16.sp),
                     modifier = Modifier.padding(bottom = 44.dp),
                 )

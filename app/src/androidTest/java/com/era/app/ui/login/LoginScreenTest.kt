@@ -4,15 +4,20 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.semantics.SemanticsActions
+import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.assertIsEnabled
 import androidx.compose.ui.test.assertIsNotEnabled
-import androidx.compose.ui.test.hasSetTextAction
+import androidx.compose.ui.test.hasAnyAncestor
+import androidx.compose.ui.test.hasClickAction
+import androidx.compose.ui.test.hasText
 import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.compose.ui.test.onNodeWithContentDescription
+import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
-import androidx.compose.ui.test.performTextInput
+import androidx.compose.ui.test.performSemanticsAction
 import com.era.app.ui.theme.ERATheme
 import com.era.app.utils.EraError
 import org.junit.Assert.assertEquals
@@ -257,7 +262,8 @@ class LoginScreenTest {
                 )
             }
         }
-        regla.onNodeWithText("Regístrate").performClick()
+        regla.onNode(hasClickAction() and hasAnyAncestor(hasText("¿No tienes cuenta? Regístrate")))
+            .performClick()
         regla.runOnIdle { assertEquals(1, registros) }
     }
 
@@ -283,9 +289,10 @@ class LoginScreenTest {
                 )
             }
         }
-        val campos = regla.onAllNodes(hasSetTextAction())
-        campos[0].performTextInput("usuario@test.com")
-        campos[1].performTextInput("clave123")
+        regla.onNodeWithTag("campoUsuario")
+            .performSemanticsAction(SemanticsActions.SetText) { it(AnnotatedString("usuario@test.com")) }
+        regla.onNodeWithTag("campoContrasena")
+            .performSemanticsAction(SemanticsActions.SetText) { it(AnnotatedString("clave123")) }
         regla.runOnIdle { assertEquals("usuario@test.com", usuario) }
         regla.runOnIdle { assertEquals("clave123", contrasena) }
     }

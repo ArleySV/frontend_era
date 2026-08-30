@@ -98,7 +98,8 @@ Implementado hasta ahora:
   `UserRepository` + `RemoteUserRepository`; componentes reutilizables `SettingsHeader`,
   `SettingsCard`/`SettingsCardRow`; manejo de 401/403 (cierre silencioso de sesión) y
   404/`INVALID_REQUEST`; mejora visual 2026-08-28 (filas con icono+divisor, avatar sobre la
-  tarjeta, título centrado); **123 tests verdes**.
+  tarjeta, título centrado); **123 tests verdes** (unitarios) e instrumentados **45/45** en
+  físico ABR-LX3 (2026-08-29).
 
 ## Compilar y ejecutar
 
@@ -113,9 +114,8 @@ gradlew.bat assembleDebug
 ./gradlew assembleDebug
 ```
 
-> **Configuración pendiente:** `NetworkModule.BASE_URL` apunta a un placeholder
-> (`https://era-backend.example.com/api/v1/`). Reemplazarlo por la URL real del
-> backend `BACKEND_ERA` antes de probar contra servidor.
+> **Configuración:** `NetworkModule.BASE_URL` apunta al backend local de
+> `BACKEND_ERA` (`http://192.168.20.64:8080/api/v1/`, host en la LAN).
 
 OTP de desarrollo del backend: código fijo `123456` (verificar correo y pasos 2/3
 de recuperación de contraseña).

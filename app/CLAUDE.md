@@ -445,12 +445,6 @@ entre frontend y backend).
 
 **Pendiente:**
 
-- Reemplazar el placeholder de `NetworkModule.BASE_URL` por la URL real
-  del backend.
-- Fase 1–2: `ClickableText` (deprecado) → migrar a `Text` + `LinkAnnotation` cuando
-  la API estable lo soporte.
-- Ajustes visuales finales de Login aplicados 2026-08-28 (hero 32%, panel 28dp,
-  pills 300/58/46, botón 56/17).
 - Capa `data/` (Room: entities, DAOs, database) — llega con la Fase 7.
 - Anexar prototipos JPG/PDF a `docs/prototipos/` (los requisitos funcionales/no
   funcionales, casos de uso e historias de usuario ya están anexados como copias
@@ -488,16 +482,16 @@ entre frontend y backend).
 - **Mejora visual aplicada 2026-08-28** (acta §14.6): filas con icono (círculo
   40dp + divisor), avatar cabalgando el borde superior de la tarjeta (anillo
   blanco + sombra), título de cabecera centrado.
+- **Instrumentados ejecutados 2026-08-29:** 45/45 verdes en físico ABR-LX3
+  (depuración inalámbrica), incluyendo `MiCuentaScreenTest`, `HomePlaceholderScreenTest`
+  y los componentes de Fase 1/2. De paso se corrigieron 2 tests de login para
+  ejecución en dispositivo (matcher "Regístrate" por `hasClickAction` + ancestro, y
+  `testTag` + `SemanticsActions.SetText` para los campos) y se migró
+  `ClickableText` (deprecado) → `Text` + `LinkAnnotation` en `LoginScreen.kt`
+  (Fase 1–2).
 
 **Pendiente:**
 
-- androidTest de Fase 3 (`MiCuentaScreenTest` 13 + `HomePlaceholderScreenTest`)
-  **solo compilados** vía `assembleDebugAndroidTest`; su ejecución
-  `connectedDebugAndroidTest` requiere emulador/dispositivo (ninguno conectado).
-- Reemplazar el placeholder de `NetworkModule.BASE_URL` por la URL real
-  del backend.
-- `ClickableText` (deprecado) → migrar a `Text` + `LinkAnnotation` cuando
-  la API estable lo soporte (Fase 1–2).
 - Capa `data/` (Room: entities, DAOs, database) — llega con la Fase 7.
 - Anexar prototipos JPG/PDF a `docs/prototipos/` (los requisitos funcionales/no
   funcionales, casos de uso e historias de usuario ya están anexados como copias
