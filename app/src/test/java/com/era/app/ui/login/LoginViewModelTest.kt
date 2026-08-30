@@ -2,6 +2,10 @@ package com.era.app.ui.login
 
 import com.era.app.remote.dto.auth.LoginRequest
 import com.era.app.remote.dto.auth.LoginResponse
+import com.era.app.remote.dto.auth.PasswordResetConfirmRequest
+import com.era.app.remote.dto.auth.PasswordResetRequest
+import com.era.app.remote.dto.auth.PasswordResetVerifyRequest
+import com.era.app.remote.dto.auth.PasswordResetVerifyResponse
 import com.era.app.remote.dto.auth.RegisterRequest
 import com.era.app.remote.dto.auth.ResendOtpRequest
 import com.era.app.remote.dto.auth.VerifyEmailRequest
@@ -200,6 +204,15 @@ class LoginViewModelTest {
         }
 
         override suspend fun logout(): Resultado<com.era.app.remote.dto.common.MessageResponse> =
+            error("No usado en login tests")
+
+        override suspend fun requestPasswordReset(request: PasswordResetRequest): Resultado<Unit> =
+            error("No usado en login tests")
+
+        override suspend fun verifyPasswordReset(request: PasswordResetVerifyRequest): Resultado<PasswordResetVerifyResponse> =
+            error("No usado en login tests")
+
+        override suspend fun confirmPasswordReset(request: PasswordResetConfirmRequest): Resultado<Unit> =
             error("No usado en login tests")
     }
 

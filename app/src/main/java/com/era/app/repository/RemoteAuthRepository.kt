@@ -3,6 +3,10 @@ package com.era.app.repository
 import com.era.app.remote.api.AuthApi
 import com.era.app.remote.dto.auth.LoginRequest
 import com.era.app.remote.dto.auth.LoginResponse
+import com.era.app.remote.dto.auth.PasswordResetConfirmRequest
+import com.era.app.remote.dto.auth.PasswordResetRequest
+import com.era.app.remote.dto.auth.PasswordResetVerifyRequest
+import com.era.app.remote.dto.auth.PasswordResetVerifyResponse
 import com.era.app.remote.dto.auth.RegisterRequest
 import com.era.app.remote.dto.auth.ResendOtpRequest
 import com.era.app.remote.dto.auth.VerifyEmailRequest
@@ -36,6 +40,15 @@ class RemoteAuthRepository @Inject constructor(
 
     override suspend fun logout(): Resultado<MessageResponse> =
         llamar { api.logout() }
+
+    override suspend fun requestPasswordReset(request: PasswordResetRequest): Resultado<Unit> =
+        llamar { api.requestPasswordReset(request) }
+
+    override suspend fun verifyPasswordReset(request: PasswordResetVerifyRequest): Resultado<PasswordResetVerifyResponse> =
+        llamar { api.verifyPasswordReset(request) }
+
+    override suspend fun confirmPasswordReset(request: PasswordResetConfirmRequest): Resultado<Unit> =
+        llamar { api.confirmPasswordReset(request) }
 
     private suspend fun <T> llamar(bloque: suspend () -> T): Resultado<T> =
         try {

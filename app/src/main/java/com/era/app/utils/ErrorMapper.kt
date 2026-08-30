@@ -19,6 +19,8 @@ object ErrorMapper {
             "CONFLICT" -> EraError.UsuarioEnUso
             "OTP_INVALID_OR_EXPIRED" -> EraError.OtpInvalido
             "OTP_RESEND_THROTTLED" -> EraError.ReenvioThrottled
+            "RESET_TOKEN_INVALID" -> EraError.ResetTokenInvalido
+            "PASSWORD_REUSED" -> EraError.PasswordReusada
             "INVALID_CREDENTIALS" -> EraError.CredencialesInvalidas
             "ACCOUNT_LOCKED" -> EraError.CuentaBloqueada
             "ACCOUNT_INACTIVE" -> EraError.CuentaInactiva

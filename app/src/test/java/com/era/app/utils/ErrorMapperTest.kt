@@ -70,6 +70,12 @@ class ErrorMapperTest {
     }
 
     @Test
+    fun `codigos de fase cinco recuperacion mapean a su tipo`() {
+        assertEquals(EraError.ResetTokenInvalido, ErrorMapper.desdeHttp(401, body("RESET_TOKEN_INVALID")))
+        assertEquals(EraError.PasswordReusada, ErrorMapper.desdeHttp(409, body("PASSWORD_REUSED")))
+    }
+
+    @Test
     fun `codigo desconocido conserva status y cuerpo nulo tambien`() {
         assertEquals(EraError.Desconocido(418), ErrorMapper.desdeHttp(418, body("TEAPOT")))
         assertEquals(EraError.Desconocido(503), ErrorMapper.desdeHttp(503, null))

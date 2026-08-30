@@ -1,5 +1,6 @@
 package com.era.app.utils
 
+import com.era.app.ui.recuperacion.CampoRecuperacion
 import com.era.app.ui.register.CampoRegistro
 
 fun EraError.mensajeUsuario(): String = when (this) {
@@ -9,6 +10,8 @@ fun EraError.mensajeUsuario(): String = when (this) {
     is EraError.UsuarioEnUso -> "Este nombre de usuario ya está en uso"
     is EraError.OtpInvalido -> "Código inválido o expirado"
     is EraError.ReenvioThrottled -> "Debes esperar antes de reenviar"
+    is EraError.ResetTokenInvalido -> "El enlace de recuperación expiró. Vuelve a solicitar un nuevo código"
+    is EraError.PasswordReusada -> "No puedes repetir tu contraseña anterior"
     is EraError.ErrorServidor -> "Error del servidor. Intenta más tarde"
     is EraError.ErrorConexion -> "Sin conexión. Verifica tu internet"
     is EraError.Desconocido -> "Error inesperado"
@@ -50,6 +53,8 @@ private infix fun CampoRegistro.mapsTo(error: EraError): Boolean = when (error) 
     is EraError.OtpInvalido -> this == CampoRegistro.CODIGO_OTP
     is EraError.Validacion,
     is EraError.ReenvioThrottled,
+    is EraError.ResetTokenInvalido,
+    is EraError.PasswordReusada,
     is EraError.ErrorServidor,
     is EraError.ErrorConexion,
     is EraError.Desconocido,
@@ -58,4 +63,41 @@ private infix fun CampoRegistro.mapsTo(error: EraError): Boolean = when (error) 
     is EraError.CuentaInactiva,
     is EraError.SesionExpirada,
     is EraError.PerfilNoEncontrado -> false
+}
+
+fun mensajeCampo(campo: CampoRecuperacion): String = when (campo) {
+    CampoRecuperacion.CORREO -> "Ingresa un correo válido"
+    CampoRecuperacion.CODIGO_OTP -> "Ingresa 6 dígitos numéricos"
+    CampoRecuperacion.NUEVA_CONTRASENA -> "La contraseña no cumple los requisitos"
+    CampoRecuperacion.CONFIRMAR_CONTRASENA -> "Las contraseñas no coinciden"
+}
+
+private infix fun CampoRecuperacion.mapsTo(error: EraError): Boolean = when (error) {
+    is EraError.CorreoRegistrado,
+    is EraError.CorreoBloqueado,
+    is EraError.UsuarioEnUso,
+    is EraError.OtpInvalido,
+    is EraError.ReenvioThrottled,
+    is EraError.ResetTokenInvalido,
+    is EraError.PasswordReusada,
+    is EraError.Validacion,
+    is EraError.ErrorServidor,
+    is EraError.ErrorConexion,
+    is EraError.Desconocido,
+    is EraError.CredencialesInvalidas,
+    is EraError.CuentaBloqueada,
+    is EraError.CuentaInactiva,
+    is EraError.SesionExpirada,
+    is EraError.PerfilNoEncontrado -> false
+}
+
+fun CampoRecuperacion.mensaje(
+    errores: Set<CampoRecuperacion>,
+    errorGeneral: EraError?,
+): String? {
+    if (this !in errores) return null
+    return when {
+        errorGeneral != null && this mapsTo errorGeneral -> errorGeneral.mensajeUsuario()
+        else -> mensajeCampo(this)
+    }
 }

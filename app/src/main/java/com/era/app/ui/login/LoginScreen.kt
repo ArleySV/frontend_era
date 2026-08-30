@@ -225,6 +225,7 @@ fun LoginContent(
 fun LoginScreen(
     onNavigateToHome: () -> Unit,
     onNavigateToRegistro: () -> Unit,
+    onNavigateARecuperacion: () -> Unit = {},
     modifier: Modifier = Modifier,
     viewModel: LoginViewModel = hiltViewModel(),
     snackbarHostState: SnackbarHostState = remember { SnackbarHostState() },
@@ -237,11 +238,15 @@ fun LoginScreen(
         if (backStackEntry?.savedStateHandle?.remove<Boolean>("registro_exitoso") == true) {
             snackbarHostState.showSnackbar("Cuenta verificada")
         }
+        if (backStackEntry?.savedStateHandle?.remove<Boolean>("recuperacion_exitosa") == true) {
+            snackbarHostState.showSnackbar("Contraseña actualizada. Ya puedes iniciar sesión.")
+        }
         eventos.collect { evento ->
             when (evento) {
                 is LoginEvento.NavegarAHome -> onNavigateToHome()
                 is LoginEvento.NavegarALogin -> { /* ya estamos en login */ }
                 is LoginEvento.NavegarARegistro -> onNavigateToRegistro()
+                is LoginEvento.NavegarARecuperacion -> onNavigateARecuperacion()
                 is LoginEvento.MostrarSnackbar -> {
                     snackbarHostState.showSnackbar(evento.mensaje)
                 }

@@ -7,6 +7,8 @@ sealed class EraError {
     data object UsuarioEnUso : EraError()
     data object OtpInvalido : EraError()
     data object ReenvioThrottled : EraError()
+    data object ResetTokenInvalido : EraError()
+    data object PasswordReusada : EraError()
     data object CredencialesInvalidas : EraError()
     data object CuentaBloqueada : EraError()
     data object CuentaInactiva : EraError()

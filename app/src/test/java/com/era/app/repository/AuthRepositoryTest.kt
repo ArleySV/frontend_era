@@ -2,6 +2,9 @@ package com.era.app.repository
 
 import com.era.app.remote.api.AuthApi
 import com.era.app.remote.dto.auth.LoginRequest
+import com.era.app.remote.dto.auth.PasswordResetConfirmRequest
+import com.era.app.remote.dto.auth.PasswordResetRequest
+import com.era.app.remote.dto.auth.PasswordResetVerifyRequest
 import com.era.app.remote.dto.auth.RegisterRequest
 import com.era.app.remote.dto.auth.ResendOtpRequest
 import com.era.app.remote.dto.auth.VerifyEmailRequest
@@ -328,6 +331,152 @@ class AuthRepositoryTest {
         val r = repo.logout()
 
         assertEquals(EraError.ErrorConexion, (r as Resultado.Fallo).error)
+    }
+
+    // ---------- password-reset ----------
+
+    private fun requestPasswordReset() = PasswordResetRequest(correo = "acudiente@test.com")
+
+    private fun requestVerifyPasswordReset() = PasswordResetVerifyRequest(
+        correo = "acudiente@test.com",
+        codigo = "123456",
+    )
+
+    private fun requestConfirmPasswordReset() = PasswordResetConfirmRequest(
+        resetToken = "jwt_reset_abc",
+        nuevaContrasena = "<TEST_PASSWORD>",
+        confirmarContrasena = "<TEST_PASSWORD>",
+    )
+
+    @Test
+    fun `requestPasswordReset 200 mapea a Exito y envia ruta correcta`() = runTest {
+        server.enqueue(respuesta(200, """{"message":"Enlace enviado"}"""))
+
+        val r = repo.requestPasswordReset(requestPasswordReset())
+
+        assertTrue(r is Resultado.Exito)
+        val peticion = server.takeRequest()
+        assertEquals(
+            "POST /api/v1/auth/password-reset/request",
+            peticion.method + " " + peticion.path
+        )
+        assertTrue(peticion.body.readUtf8().contains("correo"))
+    }
+
+    @Test
+    fun `requestPasswordReset 429 OTP_RESEND_THROTTLED mapea a ReenvioThrottled`() = runTest {
+        server.enqueue(respuesta(429, cuerpoError(429, "OTP_RESEND_THROTTLED")))
+
+        val r = repo.requestPasswordReset(requestPasswordReset())
+
+        assertEquals(EraError.ReenvioThrottled, (r as Resultado.Fallo).error)
+    }
+
+    @Test
+    fun `requestPasswordReset 400 VALIDATION_ERROR mapea a Validacion`() = runTest {
+        server.enqueue(
+            respuesta(
+                400,
+                """{"timestamp":"2026-08-23T10:00:00Z","status":400,"error":"VALIDATION_ERROR",
+                   "message":"Datos invalidos","path":"/api/v1/auth/password-reset/request",
+                   "details":[{"field":"correo","message":"Formato invalido"}]}"""
+            )
+        )
+
+        val r = repo.requestPasswordReset(requestPasswordReset())
+
+        assertEquals(EraError.Validacion(listOf("Formato invalido")), (r as Resultado.Fallo).error)
+    }
+
+    @Test
+    fun `verifyPasswordReset 200 mapea a Exito con resetToken y envia ruta correcta`() = runTest {
+        server.enqueue(respuesta(200, """{"resetToken":"jwt_reset_abc"}"""))
+
+        val r = repo.verifyPasswordReset(requestVerifyPasswordReset())
+
+        assertTrue(r is Resultado.Exito)
+        assertEquals("jwt_reset_abc", (r as Resultado.Exito).data.resetToken)
+        val peticion = server.takeRequest()
+        assertEquals(
+            "POST /api/v1/auth/password-reset/verify",
+            peticion.method + " " + peticion.path
+        )
+        val body = peticion.body.readUtf8()
+        assertTrue(body.contains("correo"))
+        assertTrue(body.contains("codigo"))
+    }
+
+    @Test
+    fun `verifyPasswordReset 401 OTP_INVALID_OR_EXPIRED mapea a OtpInvalido`() = runTest {
+        server.enqueue(respuesta(401, cuerpoError(401, "OTP_INVALID_OR_EXPIRED")))
+
+        val r = repo.verifyPasswordReset(requestVerifyPasswordReset())
+
+        assertEquals(EraError.OtpInvalido, (r as Resultado.Fallo).error)
+    }
+
+    @Test
+    fun `verifyPasswordReset sin red mapea a ErrorConexion`() = runTest {
+        server.enqueue(MockResponse().setSocketPolicy(SocketPolicy.DISCONNECT_AT_START))
+
+        val r = repo.verifyPasswordReset(requestVerifyPasswordReset())
+
+        assertEquals(EraError.ErrorConexion, (r as Resultado.Fallo).error)
+    }
+
+    @Test
+    fun `confirmPasswordReset 200 mapea a Exito y envia ruta correcta`() = runTest {
+        server.enqueue(respuesta(200, """{"message":"Clave actualizada"}"""))
+
+        val r = repo.confirmPasswordReset(requestConfirmPasswordReset())
+
+        assertTrue(r is Resultado.Exito)
+        val peticion = server.takeRequest()
+        assertEquals(
+            "POST /api/v1/auth/password-reset/confirm",
+            peticion.method + " " + peticion.path
+        )
+        val body = peticion.body.readUtf8()
+        assertTrue(body.contains("resetToken"))
+        assertTrue(body.contains("nuevaContrasena"))
+        assertTrue(body.contains("confirmarContrasena"))
+    }
+
+    @Test
+    fun `confirmPasswordReset 401 RESET_TOKEN_INVALID mapea a ResetTokenInvalido`() = runTest {
+        server.enqueue(respuesta(401, cuerpoError(401, "RESET_TOKEN_INVALID")))
+
+        val r = repo.confirmPasswordReset(requestConfirmPasswordReset())
+
+        assertEquals(EraError.ResetTokenInvalido, (r as Resultado.Fallo).error)
+    }
+
+    @Test
+    fun `confirmPasswordReset 409 PASSWORD_REUSED mapea a PasswordReusada`() = runTest {
+        server.enqueue(respuesta(409, cuerpoError(409, "PASSWORD_REUSED")))
+
+        val r = repo.confirmPasswordReset(requestConfirmPasswordReset())
+
+        assertEquals(EraError.PasswordReusada, (r as Resultado.Fallo).error)
+    }
+
+    @Test
+    fun `confirmPasswordReset 400 VALIDATION_ERROR mapea a Validacion`() = runTest {
+        server.enqueue(
+            respuesta(
+                400,
+                """{"timestamp":"2026-08-23T10:00:00Z","status":400,"error":"VALIDATION_ERROR",
+                   "message":"Datos invalidos","path":"/api/v1/auth/password-reset/confirm",
+                   "details":[{"field":"nuevaContrasena","message":"No cumple la politica"}]}"""
+            )
+        )
+
+        val r = repo.confirmPasswordReset(requestConfirmPasswordReset())
+
+        assertEquals(
+            EraError.Validacion(listOf("No cumple la politica")),
+            (r as Resultado.Fallo).error
+        )
     }
 
     private fun cuerpoError(status: Int, error: String): String =

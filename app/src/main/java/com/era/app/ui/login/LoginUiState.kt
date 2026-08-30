@@ -20,5 +20,6 @@ sealed interface LoginEvento {
     data object NavegarAHome : LoginEvento
     data object NavegarALogin : LoginEvento
     data object NavegarARegistro : LoginEvento
+    data object NavegarARecuperacion : LoginEvento
     data class MostrarSnackbar(val mensaje: String) : LoginEvento
 }

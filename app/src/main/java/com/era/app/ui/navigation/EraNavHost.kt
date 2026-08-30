@@ -17,6 +17,10 @@ import com.era.app.ui.login.HomePlaceholderScreen
 import com.era.app.ui.login.HomePlaceholderViewModel
 import com.era.app.ui.login.LoginScreen
 import com.era.app.ui.perfil.MiCuentaScreen
+import com.era.app.ui.recuperacion.RecuperacionPaso1Screen
+import com.era.app.ui.recuperacion.RecuperacionPaso2Screen
+import com.era.app.ui.recuperacion.RecuperacionPaso3Screen
+import com.era.app.ui.recuperacion.RecuperacionViewModel
 import com.era.app.ui.register.RegistroPaso1Screen
 import com.era.app.ui.register.RegistroPaso2Screen
 import com.era.app.ui.register.RegistroPaso3Screen
@@ -37,6 +41,7 @@ fun EraNavHost(
             LoginScreen(
                 onNavigateToHome = { navController.navigate(EraRoutes.HOME_PLACEHOLDER) },
                 onNavigateToRegistro = { navController.navigate(EraRoutes.REGISTRO) },
+                onNavigateARecuperacion = { navController.navigate(EraRoutes.RECUPERACION) },
                 snackbarHostState = snackbarHostState,
                 backStackEntry = navController.getBackStackEntry(EraRoutes.LOGIN),
             )
@@ -124,6 +129,69 @@ fun EraNavHost(
                     onRegistroExitoso = {
                         navController.getBackStackEntry(EraRoutes.LOGIN)
                             .savedStateHandle["registro_exitoso"] = true
+                        navController.navigate(EraRoutes.LOGIN) {
+                            popUpTo(0) { inclusive = true }
+                            launchSingleTop = true
+                        }
+                    },
+                )
+            }
+        }
+
+        navigation(
+            route = EraRoutes.RECUPERACION,
+            startDestination = EraRoutes.RECUPERACION_PASO1,
+        ) {
+            composable(EraRoutes.RECUPERACION_PASO1) {
+                val parentEntry = remember(it) {
+                    navController.getBackStackEntry(EraRoutes.RECUPERACION)
+                }
+                val vm: RecuperacionViewModel = hiltViewModel(parentEntry)
+                RecuperacionPaso1Screen(
+                    vm = vm,
+                    snackbarHostState = snackbarHostState,
+                    onVolverAlLogin = {
+                        vm.cancelar()
+                        navController.popBackStack()
+                    },
+                    onNavegarAPaso2 = {
+                        navController.navigate(EraRoutes.RECUPERACION_PASO2)
+                    },
+                )
+            }
+
+            composable(EraRoutes.RECUPERACION_PASO2) {
+                val parentEntry = remember(it) {
+                    navController.getBackStackEntry(EraRoutes.RECUPERACION)
+                }
+                val vm: RecuperacionViewModel = hiltViewModel(parentEntry)
+                RecuperacionPaso2Screen(
+                    vm = vm,
+                    snackbarHostState = snackbarHostState,
+                    onAtras = { navController.popBackStack() },
+                    onNavegarAPaso3 = {
+                        navController.navigate(EraRoutes.RECUPERACION_PASO3)
+                    },
+                    onReiniciarFlujo = {
+                        navController.popBackStack(EraRoutes.RECUPERACION_PASO1, inclusive = false)
+                    },
+                )
+            }
+
+            composable(EraRoutes.RECUPERACION_PASO3) {
+                val parentEntry = remember(it) {
+                    navController.getBackStackEntry(EraRoutes.RECUPERACION)
+                }
+                val vm: RecuperacionViewModel = hiltViewModel(parentEntry)
+                RecuperacionPaso3Screen(
+                    vm = vm,
+                    snackbarHostState = snackbarHostState,
+                    onReiniciarFlujo = {
+                        navController.popBackStack(EraRoutes.RECUPERACION_PASO1, inclusive = false)
+                    },
+                    onRecuperacionExitosa = {
+                        navController.getBackStackEntry(EraRoutes.LOGIN)
+                            .savedStateHandle["recuperacion_exitosa"] = true
                         navController.navigate(EraRoutes.LOGIN) {
                             popUpTo(0) { inclusive = true }
                             launchSingleTop = true

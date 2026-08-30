@@ -92,7 +92,7 @@ class LoginViewModel @Inject constructor(
     }
 
     fun onOlvidasteContrasena() {
-        _eventos.trySend(LoginEvento.MostrarSnackbar("Próximamente"))
+        _eventos.trySend(LoginEvento.NavegarARecuperacion)
     }
 
     private fun manejarFallo(error: EraError) {
