@@ -1,7 +1,12 @@
 package com.era.app.ui.login
 
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.junit4.createComposeRule
+import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
 import com.era.app.ui.theme.ERATheme
@@ -42,14 +47,65 @@ class HomePlaceholderScreenTest {
     }
 
     @Test
-    fun cerrarSesionInvocaOnCerrarSesion() {
-        var cierra = 0
+    fun cerrarSesionAbreDialogoDeConfirmacion() {
         regla.setContent {
+            var visible by remember { mutableStateOf(false) }
             ERATheme {
-                HomePlaceholderScreen(onCerrarSesion = { cierra++ }, onNavigatePerfil = {})
+                HomePlaceholderScreen(
+                    onCerrarSesion = { visible = true },
+                    onNavigatePerfil = {},
+                    dialogoCierreVisible = visible,
+                )
             }
         }
-        regla.onNodeWithText("Cerrar sesión").performClick()
-        regla.runOnIdle { assertEquals(1, cierra) }
+        regla.onNodeWithTag("botonCerrarSesion").performClick()
+        regla.onNodeWithTag("dialogoCierre").assertIsDisplayed()
+        regla.onNodeWithText("¿Deseas cerrar sesión?").assertIsDisplayed()
+        regla.onNodeWithText("Sí, cerrar sesión").assertIsDisplayed()
+        regla.onNodeWithText("Cancelar").assertIsDisplayed()
+    }
+
+    @Test
+    fun cancelarCierraDialogoSinConfirmar() {
+        var cancela = 0
+        var confirma = 0
+        regla.setContent {
+            var visible by remember { mutableStateOf(true) }
+            ERATheme {
+                HomePlaceholderScreen(
+                    onCerrarSesion = {},
+                    onNavigatePerfil = {},
+                    dialogoCierreVisible = visible,
+                    onCancelarCierre = { visible = false; cancela++ },
+                    onConfirmarCierre = { confirma++ },
+                )
+            }
+        }
+        regla.onNodeWithTag("dialogoCierre").assertIsDisplayed()
+        regla.onNodeWithTag("botonCancelarCierre").performClick()
+        regla.onNodeWithTag("dialogoCierre").assertDoesNotExist()
+        regla.runOnIdle {
+            assertEquals(1, cancela)
+            assertEquals(0, confirma)
+        }
+    }
+
+    @Test
+    fun confirmarDisparaOnConfirmarCierre() {
+        var confirma = 0
+        regla.setContent {
+            var visible by remember { mutableStateOf(true) }
+            ERATheme {
+                HomePlaceholderScreen(
+                    onCerrarSesion = {},
+                    onNavigatePerfil = {},
+                    dialogoCierreVisible = visible,
+                    onCancelarCierre = { visible = false },
+                    onConfirmarCierre = { confirma++ },
+                )
+            }
+        }
+        regla.onNodeWithTag("botonConfirmarCierre").performClick()
+        regla.runOnIdle { assertEquals(1, confirma) }
     }
 }

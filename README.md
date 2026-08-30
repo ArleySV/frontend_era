@@ -59,7 +59,7 @@ com.era.app/
 
 ## Estado actual
 
-**Fase 0, 1, 2 y 3 completadas.** Detalle del avance fase por fase:
+**Fase 0, 1, 2, 3 y 4 completadas.** Detalle del avance fase por fase:
 
 | Fase | Módulo | Estado |
 |---|---|---|
@@ -67,8 +67,8 @@ com.era.app/
 | 1 | Registro + Verificación OTP | ✅ Completada (2026-08-23) |
 | 2 | Login | ✅ Completada (2026-08-27) |
 | 3 | Perfil / Mi cuenta | ✅ Completada (2026-08-28) |
-| 4 | Logout | ⬜ Pendiente — **siguiente paso** |
-| 5 | Recuperación de contraseña | ⬜ Pendiente |
+| 4 | Logout | ✅ Completada (2026-08-29) |
+| 5 | Recuperación de contraseña | ⬜ Pendiente — **siguiente paso** |
 | 6 | Eliminar cuenta | ⬜ Pendiente |
 | 7 | Progreso / Sync (Room + merge offline-first) | ⬜ Pendiente |
 | 8 | Comentarios | ⬜ Pendiente |
@@ -100,6 +100,13 @@ Implementado hasta ahora:
   404/`INVALID_REQUEST`; mejora visual 2026-08-28 (filas con icono+divisor, avatar sobre la
   tarjeta, título centrado); **123 tests verdes** (unitarios) e instrumentados **45/45** en
   físico ABR-LX3 (2026-08-29).
+- **Fase 4 — Logout:** cierre de sesión con diálogo de confirmación ("¿Deseas cerrar sesión?"
+  → "Sí, cerrar sesión"/"Cancelar", con anti doble-tap y diálogo no-descartable mientras
+  confirma; `popUpTo(0){inclusive=true}`); semántica best-effort D-32 (se limpia el token
+  local y se navega a Login ante CUALQUIER resultado del POST, validado también con backend
+  apagado); `AuthRepository.logout()` en repository y `HomePlaceholderUiState` +
+  `HomePlaceholderViewModel` evolucionado (AuthRepository + SesionRepository inyectados);
+  **138 tests verdes** (unitarios) e instrumentados **47/47** en físico ABR-LX3 (2026-08-29).
 
 ## Compilar y ejecutar
 

@@ -198,6 +198,9 @@ class LoginViewModelTest {
             return loginQueue.removeFirstOrNull()
                 ?: error("login llamado sin respuesta encolada")
         }
+
+        override suspend fun logout(): Resultado<com.era.app.remote.dto.common.MessageResponse> =
+            error("No usado en login tests")
     }
 
     private class FakeSesionRepository : SesionRepository {

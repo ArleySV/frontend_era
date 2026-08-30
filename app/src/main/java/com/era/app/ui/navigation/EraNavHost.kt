@@ -2,6 +2,9 @@ package com.era.app.ui.navigation
 
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -9,6 +12,7 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.navigation
+import com.era.app.ui.login.HomePlaceholderEvento
 import com.era.app.ui.login.HomePlaceholderScreen
 import com.era.app.ui.login.HomePlaceholderViewModel
 import com.era.app.ui.login.LoginScreen
@@ -40,14 +44,24 @@ fun EraNavHost(
 
         composable(EraRoutes.HOME_PLACEHOLDER) {
             val vm: HomePlaceholderViewModel = hiltViewModel()
+            val uiState by vm.uiState.collectAsState()
+            LaunchedEffect(Unit) {
+                vm.eventos.collect { evento ->
+                    when (evento) {
+                        is HomePlaceholderEvento.NavegarALogin ->
+                            navController.navigate(EraRoutes.LOGIN) {
+                                popUpTo(0) { inclusive = true }
+                            }
+                    }
+                }
+            }
             HomePlaceholderScreen(
                 onNavigatePerfil = { navController.navigate(EraRoutes.PERFIL) },
-                onCerrarSesion = {
-                    vm.cerrarSesion()
-                    navController.navigate(EraRoutes.LOGIN) {
-                        popUpTo(0) { inclusive = true }
-                    }
-                },
+                onCerrarSesion = vm::onCerrarSesionClick,
+                dialogoCierreVisible = uiState.dialogoCierreVisible,
+                cerrando = uiState.cerrando,
+                onCancelarCierre = vm::onCancelarCierre,
+                onConfirmarCierre = vm::onConfirmarCierre,
             )
         }
 

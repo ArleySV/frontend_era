@@ -280,6 +280,56 @@ class AuthRepositoryTest {
         assertTrue(body.contains("contrasena"))
     }
 
+    // ---------- logout ----------
+
+    @Test
+    fun `logout 200 mapea a Exito con message`() = runTest {
+        server.enqueue(respuesta(200, """{"message":"Sesión cerrada."}"""))
+
+        val r = repo.logout()
+
+        assertTrue(r is Resultado.Exito)
+        assertEquals("Sesión cerrada.", (r as Resultado.Exito).data.message)
+        val peticion = server.takeRequest()
+        assertEquals("POST /api/v1/auth/logout", peticion.method + " " + peticion.path)
+    }
+
+    @Test
+    fun `logout 200 envia request sin body`() = runTest {
+        server.enqueue(respuesta(200, """{"message":"Sesión cerrada."}"""))
+
+        repo.logout()
+
+        assertTrue(server.takeRequest().body.readUtf8().isEmpty())
+    }
+
+    @Test
+    fun `logout 401 UNAUTHORIZED mapea a SesionExpirada`() = runTest {
+        server.enqueue(respuesta(401, cuerpoError(401, "UNAUTHORIZED")))
+
+        val r = repo.logout()
+
+        assertEquals(EraError.SesionExpirada, (r as Resultado.Fallo).error)
+    }
+
+    @Test
+    fun `logout 500 INTERNAL_ERROR mapea a ErrorServidor`() = runTest {
+        server.enqueue(respuesta(500, cuerpoError(500, "INTERNAL_ERROR")))
+
+        val r = repo.logout()
+
+        assertEquals(EraError.ErrorServidor, (r as Resultado.Fallo).error)
+    }
+
+    @Test
+    fun `logout sin red mapea a ErrorConexion`() = runTest {
+        server.enqueue(MockResponse().setSocketPolicy(SocketPolicy.DISCONNECT_AT_START))
+
+        val r = repo.logout()
+
+        assertEquals(EraError.ErrorConexion, (r as Resultado.Fallo).error)
+    }
+
     private fun cuerpoError(status: Int, error: String): String =
         """{"timestamp":"2026-08-23T10:00:00Z","status":$status,"error":"$error",
            "message":"Mensaje generico","path":"/api/v1/auth/x"}"""

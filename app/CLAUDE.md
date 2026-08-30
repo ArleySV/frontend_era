@@ -209,8 +209,8 @@ siguiente, y requiere el plan + confirmación de la regla 3 de la sección 4.
 |---|---|---|---|---|
 | 1 | Registro + Verificación OTP (A + A.1) — **COMPLETADA** | `register`, `verify-email`, `resend-otp` | Media | Fase 0 |
 | 2 | Login (B) — **COMPLETADA** | `login` | Baja | Fase 1 |
-| 3 | Perfil / Mi cuenta (D) | `GET /me`, `PATCH /me` | Baja | Fase 2 |
-| 4 | Logout (F) | `logout` | Muy baja | Fase 2 |
+| 3 | Perfil / Mi cuenta (D) — **COMPLETADA** | `GET /me`, `PATCH /me` | Baja | Fase 2 |
+| 4 | Logout (F) — **COMPLETADA** | `logout` | Muy baja | Fase 2 |
 | 5 | Recuperación de contraseña (C) | `password-reset/request\|verify\|confirm` | Media | Fase 2 |
 | 6 | Eliminar cuenta (E) | `DELETE /me` | Baja | Fase 3 |
 | 7 | Progreso / Sync (G) | `GET/POST /progress/sync` | **Alta** (Room + merge offline-first) | Fase 2 |
@@ -361,7 +361,7 @@ entre frontend y backend).
 ## 10. Estado actual de este repositorio
 
 **Fase 0 completada.** **Fase 1 completada.** **Fase 2 completada.**
-**Fase 3 completada.**
+**Fase 3 completada.** **Fase 4 completada.**
 
 ### Fase 0 — Preparación del entorno
 
@@ -498,9 +498,42 @@ entre frontend y backend).
   sincronizadas desde `BACKEND_ERA/docs`, con nota de procedencia; los diseños de
   pantallas están en `docs/decisiones-tecnicas.md` §10–16).
 
+### Fase 4 — Logout (completada 2026-08-29)
+
+**Plan vinculante:** `docs/fase-04-logout-analisis.md`, decisiones D-32…D-36.
+
+- **Repository:** `logout(): Resultado<MessageResponse>` añadido a `AuthRepository` +
+  `RemoteAuthRepository` (reusa el wrapper `llamar { api.logout() }`; `AuthApi` ya lo
+  declaraba — no se toca).
+- **Semántica D-32 (best-effort):** ante CUALQUIER resultado del POST (200, offline,
+  401, 500) se limpia el token local (`limpiarToken()`) y se navega a Login. El backend
+  es stateless: "la invalidación del token es responsabilidad del cliente". Validado en
+  emulador también con backend apagado.
+- **ViewModel:** `HomePlaceholderUiState.kt` (nuevo: `dialogoCierreVisible`/`cerrando` +
+  evento `NavegarALogin`) y `HomePlaceholderViewModel` evolucionado (D-34): inyecta
+  `AuthRepository` + `SesionRepository`; `onCerrarSesionClick` (anti re-apertura),
+  `onCancelarCierre` (no-op si `cerrando`, CA3), `onConfirmarCierre` (anti doble-tap);
+  se eliminó `cerrarSesion()`.
+- **Pantalla/Navegación (D-35):** diálogo de confirmación en `HomePlaceholderScreen`
+  (título 20sp Bold, "¿Deseas cerrar sesión?" 16sp, "Sí, cerrar sesión"/"Cancelar",
+  spinner al confirmar, `onDismissRequest` no-op si `cerrando`, 4 testTags); evento→
+  navegación en `EraNavHost` con `popUpTo(0){inclusive=true}`.
+- **Tests:** 138 verdes (123 previos + AuthRepository logout 5 + HomePlaceholderViewModel
+  10). Instrumentados **47/47** en físico ABR-LX3 (2026-08-29): `HomePlaceholderScreenTest`
+  reescrito (abre diálogo / cancelar CA3 / confirmar). Cero dependencias nuevas; no se
+  tocaron AuthApi, DTOs, ErrorMapper, MensajeError, EraError ni build files (D-36).
+
+**Pendiente:**
+
+- Capa `data/` (Room: entities, DAOs, database) — llega con la Fase 7.
+- Anexar prototipos JPG/PDF a `docs/prototipos/` (los requisitos funcionales/no
+  funcionales, casos de uso e historias de usuario ya están anexados como copias
+  sincronizadas desde `BACKEND_ERA/docs`, con nota de procedencia; los diseños de
+  pantallas están en `docs/decisiones-tecnicas.md` §10–16).
+
 Control de versiones: repositorio publicado en GitHub (`ArleySV/frontend_era`,
 rama `main`, commit inicial `43d3a0b`).
 
-**Próximo paso:** Fase 4 — Logout (F, `POST /logout`, stateless: el cliente borra
-el JWT). Depende de Fase 2 (JWT habilitado). Detener para revisión del propietario
-al completar cada capa.
+**Próximo paso:** Fase 5 — Recuperación de contraseña (C,
+`password-reset/request|verify|confirm`). Depende de Fase 2 (flujo de correo/OTP ya
+validado). Detener para revisión del propietario al completar cada capa.

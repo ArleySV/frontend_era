@@ -573,5 +573,8 @@ class RegistroViewModelTest {
 
         override suspend fun login(request: LoginRequest): Resultado<LoginResponse> =
             error("No usado en registro tests")
+
+        override suspend fun logout(): Resultado<com.era.app.remote.dto.common.MessageResponse> =
+            error("No usado en registro tests")
     }
 }

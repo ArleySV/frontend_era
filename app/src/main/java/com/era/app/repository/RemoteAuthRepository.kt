@@ -7,6 +7,7 @@ import com.era.app.remote.dto.auth.RegisterRequest
 import com.era.app.remote.dto.auth.ResendOtpRequest
 import com.era.app.remote.dto.auth.VerifyEmailRequest
 import com.era.app.remote.dto.common.ErrorResponse
+import com.era.app.remote.dto.common.MessageResponse
 import com.era.app.utils.ErrorMapper
 import com.era.app.utils.EraError
 import kotlinx.coroutines.CancellationException
@@ -32,6 +33,9 @@ class RemoteAuthRepository @Inject constructor(
 
     override suspend fun login(request: LoginRequest): Resultado<LoginResponse> =
         llamar { api.login(request) }
+
+    override suspend fun logout(): Resultado<MessageResponse> =
+        llamar { api.logout() }
 
     private suspend fun <T> llamar(bloque: suspend () -> T): Resultado<T> =
         try {

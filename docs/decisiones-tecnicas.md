@@ -2365,3 +2365,28 @@ Authorization: Bearer <session-token>
 
 - **Service tests** (`ProgressSyncServiceTest`): 7 tests — happy path, nivel 1 previo, nivel 1 sin fila, cuenta eliminada, contraseña incorrecta, usuario inexistente, 2 transacciones lock+reset
 - **Route tests** (`ProgressControllerTest`): 8 tests — 401 sin token, 401 token reseteo, 200 happy path, 400 campo ausente, 400 vacía, 403 cuenta eliminada, 401 contraseña incorrecta, 400 sin campo contrasena
+
+## 18. Fase 4 — Logout (implementada 2026-08-29)
+
+Plan vinculante: `docs/fase-04-logout-analisis.md`, decisiones D-32…D-36 (acta y registro de
+la implementación en el §14 de ese documento).
+
+**Diálogo de confirmación (componente transitorio dentro de `HomePlaceholderScreen`):**
+`AlertDialog` Material 3 con `RoundedCornerShape(16.dp)`:
+
+- Título "Cerrar sesión": 20sp Bold, `ColorTextDark`.
+- Mensaje "¿Deseas cerrar sesión?": 16sp, `ColorTextDark`.
+- Acción primaria "Sí, cerrar sesión": contenedor `ColorError`, texto blanco 16sp Bold,
+  esquinas 12dp; mientras `cerrando` muestra `CircularProgressIndicator` blanco (20dp,
+  stroke 2dp).
+- Acción secundaria "Cancelar": `TextButton`, 16sp Bold `ColorPrimary`.
+- `onDismissRequest` es no-op si `cerrando` (CA3).
+- testTags: `botonCerrarSesion`, `dialogoCierre`, `botonConfirmarCierre`,
+  `botonCancelarCierre`.
+
+**Comportamiento (D-32 best-effort):** al confirmar, el ViewModel llama `logout()`
+(descarta el resultado — 200, 401, 500 u offline), limpia el token local (`limpiarToken()`)
+y emite `NavegarALogin`; `EraNavHost` navega con `popUpTo(0){inclusive=true}`. CA4: no se
+toca el progreso ni datos locales. Validado en emulador también con backend apagado.
+
+**Veredicto de cierre:** 138 unitarios + 47 instrumentados en físico ABR-LX3 (2026-08-29).
