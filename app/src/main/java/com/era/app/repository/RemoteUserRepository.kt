@@ -2,6 +2,7 @@ package com.era.app.repository
 
 import com.era.app.remote.api.UsersApi
 import com.era.app.remote.dto.common.ErrorResponse
+import com.era.app.remote.dto.user.DeleteAccountRequest
 import com.era.app.remote.dto.user.UpdateUsernameRequest
 import com.era.app.remote.dto.user.UserProfile
 import com.era.app.utils.ErrorMapper
@@ -23,6 +24,9 @@ class RemoteUserRepository @Inject constructor(
 
     override suspend fun actualizarNombreUsuario(nombre: String): Resultado<UserProfile> =
         llamar { api.updateUsername(UpdateUsernameRequest(nombre)) }
+
+    override suspend fun eliminarCuenta(contrasena: String): Resultado<Unit> =
+        llamar { api.deleteAccount(DeleteAccountRequest(contrasena)) }
 
     private suspend fun <T> llamar(bloque: suspend () -> T): Resultado<T> =
         try {

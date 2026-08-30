@@ -256,6 +256,8 @@ class MiCuentaViewModelTest {
             return actualizarQueue.removeFirstOrNull()
                 ?: error("actualizarNombreUsuario llamado sin respuesta encolada")
         }
+
+        override suspend fun eliminarCuenta(contrasena: String): Resultado<Unit> = error("No usado")
     }
 
     private class FakeSesionRepository : SesionRepository {

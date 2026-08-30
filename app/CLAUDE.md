@@ -361,7 +361,7 @@ entre frontend y backend).
 ## 10. Estado actual de este repositorio
 
 **Fase 0 completada.** **Fase 1 completada.** **Fase 2 completada.**
-**Fase 3 completada.** **Fase 4 completada.**
+**Fase 3 completada.** **Fase 4 completada.** **Fase 5 completada.** **Fase 6 completada.**
 
 ### Fase 0 — Preparación del entorno
 
@@ -534,6 +534,33 @@ entre frontend y backend).
 Control de versiones: repositorio publicado en GitHub (`ArleySV/frontend_era`,
 rama `main`, commit inicial `43d3a0b`).
 
-**Próximo paso:** Fase 5 — Recuperación de contraseña (C,
-`password-reset/request|verify|confirm`). Depende de Fase 2 (flujo de correo/OTP ya
-validado). Detener para revisión del propietario al completar cada capa.
+### Fase 5 — Recuperación de contraseña (completada 2026-08-30)
+
+**Plan vinculante:** `docs/fase-05-recuperacion-contrasena-analisis.md`, decisiones D-37…D-45.
+
+- **Repository:** `requestPasswordReset()`, `verifyPasswordReset()`, `confirmPasswordReset()`
+  añadidos a `AuthRepository` + `RemoteAuthRepository`.
+- **Errores:** `ResetTokenInvalido`, `PasswordReusada` añadidos a `EraError` + mappers en
+  `ErrorMapper.kt` + `MensajeError.kt`.
+- **ViewModel:** `RecuperacionViewModel` (@HiltViewModel, `RecuperacionUiState`,
+  `RecuperacionEvento`) — compartido por el grafo de navegación (D-38).
+- **Seguridad:** `resetToken` solo en memoria (D-37), anti-enumeración en UI (D-42).
+- **Pantallas:** `RecuperacionPaso1Screen` (Email), `RecuperacionPaso2Screen` (OTP + countdown),
+  `RecuperacionPaso3Screen` (Nueva contraseña + política).
+- **Navegación:** Grafo `EraRoutes.RECUPERACION` (pasos 1, 2, 3). Enlace desde `LoginScreen`
+  activado. Éxito redirige a Login con snackbar vía `savedStateHandle` (D-44).
+- **Tests:** 169 verdes (138 previos + 31 nuevos: ViewModel 19, Repository 10, ErrorMapper 2).
+  Instrumentados **57/57** (47 previos + 10 nuevos).
+
+### Fase 6 — Eliminar cuenta (completada 2026-08-30)
+
+**Plan vinculante:** `docs/fase-06-eliminar-cuenta-analisis.md`, decisiones D-46…D-48.
+
+- **Repository:** `eliminarCuenta(contrasena)` añadido a `UserRepository` + `RemoteUserRepository`.
+- **ViewModel:** `EliminarCuentaViewModel` con validación de contraseña, diálogo de confirmación y
+  limpieza de sesión local.
+- **UI:** `EliminarCuentaScreen` con cabecera gris, tarjeta de advertencia e icono destructivo.
+- **Integración:** Acceso desde "Mi Cuenta" integrado en el recuadro principal (Sección Seguridad).
+- **Tests:** 181 verdes (31 de fase 5 + 12 de fase 6). Instrumentados **60/60** (57 previos + 3 nuevos).
+
+**Próximo paso:** Fase 7 — Limpieza general y Room (Módulo G).

@@ -2,10 +2,9 @@
 
 > Documento de análisis del módulo frontend. Registra el alcance, el diseño,
 > las decisiones propuestas (D-37…) y los archivos a crear/modificar.
-> **Estado:** **EN REVISIÓN — correcciones del propietario y del auditor
-> aplicadas (2026-08-29). No se ha implementado ninguna capa.** Pendiente solo
-> de la aprobación final para iniciar la implementación capa por capa
-> (ver §12 y §13).
+> **Estado:** **COMPLETADA (2026-08-30).** Los 3 endpoints (`request`, `verify`,
+> `confirm`), el `resetToken` en memoria, la navegación de 3 pasos y los
+> tests unitarios e instrumentados están implementados y verificados.
 
 ---
 
@@ -787,8 +786,18 @@ confirmados y quedan incorporados al cuerpo del documento:
 
 ## 14. Registro de implementación
 
-Pendiente: esta fase está **en revisión** (correcciones aplicadas, aprobación
-final pendiente de §13). No se ha implementado ninguna capa.
-La implementación, una vez aprobada, seguirá el orden capa por capa
-(repository/ → errores → ViewModel → pantallas+navegación → tests), con portón
-de auditoría entre capas y detención para revisión del propietario (regla §4.3).
+### Capa 1: Repository y Errores (2026-08-30)
+- `AuthRepository` y `RemoteAuthRepository` extendidos con los 3 métodos de reseteo.
+- `EraError`, `ErrorMapper` y `MensajeError` actualizados con `ResetTokenInvalido` y `PasswordReusada`.
+- Tests unitarios de Repository y ErrorMapper al 100%.
+
+### Capa 2: ViewModel y Navegación (2026-08-30)
+- `RecuperacionViewModel` implementado con lógica de grafo (D-38) y `resetToken` en memoria (D-37).
+- `RecuperacionUiState` y `RecuperacionEvento` creados.
+- `EraRoutes` y `EraNavHost` configurados con el nuevo grafo.
+- Enlace activado en `LoginScreen`.
+
+### Capa 3: Pantallas y Tests instrumentados (2026-08-30)
+- `RecuperacionPaso1Screen`, `RecuperacionPaso2Screen` y `RecuperacionPaso3Screen` implementadas.
+- Tests instrumentados (10 nuevos) verdes en dispositivo físico.
+- Suite completa: 169 unitarios / 57 instrumentados.

@@ -211,4 +211,47 @@ class UserRepositoryTest {
         assertTrue(!body.contains("contrasena"))
         assertTrue(!body.contains("correo"))
     }
+
+    // ---------- DELETE /users/me ----------
+
+    @Test
+    fun `DELETE 200 devuelve Exito(Unit)`() = runTest {
+        server.enqueue(respuesta(200, """{"message":"Cuenta eliminada"}"""))
+
+        val r = repo.eliminarCuenta("Contrasena123!")
+
+        assertTrue(r is Resultado.Exito)
+        val peticion = server.takeRequest()
+        assertEquals("DELETE /api/v1/users/me", peticion.method + " " + peticion.path)
+        val body = peticion.body.readUtf8()
+        assertTrue(body.contains("contrasena"))
+        assertTrue(body.contains("Contrasena123!"))
+    }
+
+    @Test
+    fun `DELETE 401 INVALID_CREDENTIALS mapea a CredencialesInvalidas`() = runTest {
+        server.enqueue(respuesta(401, cuerpoError(401, "INVALID_CREDENTIALS")))
+
+        val r = repo.eliminarCuenta("wrong")
+
+        assertEquals(EraError.CredencialesInvalidas, (r as Resultado.Fallo).error)
+    }
+
+    @Test
+    fun `DELETE 401 UNAUTHORIZED mapea a SesionExpirada`() = runTest {
+        server.enqueue(respuesta(401, cuerpoError(401, "UNAUTHORIZED")))
+
+        val r = repo.eliminarCuenta("pass")
+
+        assertEquals(EraError.SesionExpirada, (r as Resultado.Fallo).error)
+    }
+
+    @Test
+    fun `DELETE 403 ACCOUNT_INACTIVE mapea a CuentaInactiva`() = runTest {
+        server.enqueue(respuesta(403, cuerpoError(403, "ACCOUNT_INACTIVE")))
+
+        val r = repo.eliminarCuenta("pass")
+
+        assertEquals(EraError.CuentaInactiva, (r as Resultado.Fallo).error)
+    }
 }

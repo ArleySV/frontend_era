@@ -16,6 +16,8 @@ import com.era.app.ui.login.HomePlaceholderEvento
 import com.era.app.ui.login.HomePlaceholderScreen
 import com.era.app.ui.login.HomePlaceholderViewModel
 import com.era.app.ui.login.LoginScreen
+import com.era.app.ui.perfil.EliminarCuentaScreen
+import com.era.app.ui.perfil.EliminarCuentaViewModel
 import com.era.app.ui.perfil.MiCuentaScreen
 import com.era.app.ui.recuperacion.RecuperacionPaso1Screen
 import com.era.app.ui.recuperacion.RecuperacionPaso2Screen
@@ -78,6 +80,29 @@ fun EraNavHost(
                         popUpTo(0) { inclusive = true }
                     }
                 },
+                onNavegarAEliminarCuenta = {
+                    navController.navigate(EraRoutes.ELIMINAR_CUENTA)
+                }
+            )
+        }
+
+        composable(EraRoutes.ELIMINAR_CUENTA) {
+            val vm: EliminarCuentaViewModel = hiltViewModel()
+            LaunchedEffect(Unit) {
+                vm.eventos.collect { evento ->
+                    when (evento) {
+                        is com.era.app.ui.perfil.EliminarCuentaEvento.NavegarALogin -> {
+                            navController.navigate(EraRoutes.LOGIN) {
+                                popUpTo(0) { inclusive = true }
+                            }
+                        }
+                    }
+                }
+            }
+            EliminarCuentaScreen(
+                vm = vm,
+                onVolver = { navController.popBackStack() },
+                snackbarHostState = snackbarHostState
             )
         }
 

@@ -38,6 +38,7 @@ class MiCuentaScreenTest {
             onNombreUsuarioChange = {},
             onGuardar = {},
             onReintentar = {},
+            onEliminarCuenta = {},
         )
 
     @Test
@@ -50,6 +51,8 @@ class MiCuentaScreenTest {
         regla.onNodeWithText("acudiente@test.com").assertIsDisplayed()
         regla.onNodeWithText("Nombre de usuario").assertIsDisplayed()
         regla.onNodeWithText("Fecha de nacimiento").assertIsDisplayed()
+        regla.onNodeWithText("Seguridad").assertIsDisplayed()
+        regla.onNodeWithText("Eliminar mi cuenta").assertIsDisplayed()
     }
 
     @Test
@@ -84,6 +87,7 @@ class MiCuentaScreenTest {
                     onNombreUsuarioChange = {},
                     onGuardar = {},
                     onReintentar = {},
+                    onEliminarCuenta = {},
                 )
             }
         }
@@ -116,6 +120,7 @@ class MiCuentaScreenTest {
                     onNombreUsuarioChange = {},
                     onGuardar = {},
                     onReintentar = {},
+                    onEliminarCuenta = {},
                 )
             }
         }
@@ -136,6 +141,7 @@ class MiCuentaScreenTest {
                     onNombreUsuarioChange = {},
                     onGuardar = { guarda++ },
                     onReintentar = {},
+                    onEliminarCuenta = {},
                 )
             }
         }
@@ -164,5 +170,26 @@ class MiCuentaScreenTest {
     fun estadoCargandoMuestraSpinner() {
         regla.setContent { ERATheme { emitir(MiCuentaUiState(cargando = true)) } }
         regla.onNodeWithText("Mi Cuenta").assertIsDisplayed()
+    }
+
+    @Test
+    fun botonGestionarEliminarInvocaCallback() {
+        var veces = 0
+        regla.setContent {
+            ERATheme {
+                MiCuentaContent(
+                    uiState = MiCuentaUiState(perfil = perfil),
+                    onVolver = {},
+                    onEditar = {},
+                    onDialogCancelar = {},
+                    onNombreUsuarioChange = {},
+                    onGuardar = {},
+                    onReintentar = {},
+                    onEliminarCuenta = { veces++ },
+                )
+            }
+        }
+        regla.onNodeWithText("Gestionar").performClick()
+        regla.runOnIdle { assertEquals(1, veces) }
     }
 }

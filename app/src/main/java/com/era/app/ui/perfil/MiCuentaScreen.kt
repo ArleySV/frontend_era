@@ -20,6 +20,7 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.DateRange
+import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.Email
 import androidx.compose.material.icons.filled.Person
@@ -67,6 +68,7 @@ import com.era.app.utils.mensajeUsuario
 fun MiCuentaScreen(
     onVolver: () -> Unit,
     onNavegarALogin: () -> Unit,
+    onNavegarAEliminarCuenta: () -> Unit,
     modifier: Modifier = Modifier,
     viewModel: MiCuentaViewModel = hiltViewModel(),
 ) {
@@ -93,6 +95,7 @@ fun MiCuentaScreen(
             onNombreUsuarioChange = viewModel::onNombreUsuarioChange,
             onGuardar = viewModel::onGuardarClick,
             onReintentar = viewModel::onReintentar,
+            onEliminarCuenta = onNavegarAEliminarCuenta,
         )
         SnackbarHost(
             hostState = snackbarHostState,
@@ -110,6 +113,7 @@ internal fun MiCuentaContent(
     onNombreUsuarioChange: (String) -> Unit,
     onGuardar: () -> Unit,
     onReintentar: () -> Unit,
+    onEliminarCuenta: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     Column(modifier = modifier.fillMaxSize()) {
@@ -217,7 +221,24 @@ internal fun MiCuentaContent(
                                         ?: perfil.fechaNacimiento,
                                     icono = Icons.Filled.DateRange,
                                     descripcionIcono = "Icono de fecha",
+                                    mostrarDivisor = true,
+                                )
+                                SettingsCardRow(
+                                    label = "Seguridad",
+                                    value = "Eliminar mi cuenta",
+                                    icono = Icons.Filled.Delete,
+                                    descripcionIcono = "Icono de eliminar",
                                     mostrarDivisor = false,
+                                    accion = {
+                                        TextButton(onClick = onEliminarCuenta) {
+                                            Text(
+                                                text = "Gestionar",
+                                                fontSize = 14.sp,
+                                                fontWeight = FontWeight.Medium,
+                                                color = ColorError,
+                                            )
+                                        }
+                                    },
                                 )
                             }
                             AvatarPerfil(
@@ -347,6 +368,7 @@ private fun MiCuentaPreview() {
             onNombreUsuarioChange = {},
             onGuardar = {},
             onReintentar = {},
+            onEliminarCuenta = {},
         )
     }
 }
