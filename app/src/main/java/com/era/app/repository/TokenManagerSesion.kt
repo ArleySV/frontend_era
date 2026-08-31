@@ -13,6 +13,10 @@ class TokenManagerSesion @Inject constructor(
 
     override fun obtenerToken(): String? = tokenManager.getToken()
 
+    override fun guardarCorreo(correo: String) = tokenManager.saveEmail(correo)
+
+    override fun obtenerCorreo(): String? = tokenManager.getEmail()
+
     override fun limpiarToken() = tokenManager.clearToken()
 
     override fun tieneToken(): Boolean = tokenManager.hasToken()

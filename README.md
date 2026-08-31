@@ -59,7 +59,7 @@ com.era.app/
 
 ## Estado actual
 
-**Fase 0, 1, 2, 3 y 4 completadas.** Detalle del avance fase por fase:
+**Fase 0, 1, 2, 3, 4, 5, 6 y 7 completadas.** Detalle del avance fase por fase:
 
 | Fase | Módulo | Estado |
 |---|---|---|
@@ -68,10 +68,10 @@ com.era.app/
 | 2 | Login | ✅ Completada (2026-08-27) |
 | 3 | Perfil / Mi cuenta | ✅ Completada (2026-08-28) |
 | 4 | Logout | ✅ Completada (2026-08-29) |
-| 5 | Recuperación de contraseña | ⬜ Pendiente — **siguiente paso** |
-| 6 | Eliminar cuenta | ⬜ Pendiente |
-| 7 | Progreso / Sync (Room + merge offline-first) | ⬜ Pendiente |
-| 8 | Comentarios | ⬜ Pendiente |
+| 5 | Recuperación de contraseña | ✅ Completada (2026-08-30) |
+| 6 | Eliminar cuenta | ✅ Completada (2026-08-30) |
+| 7 | Progreso / Sync (Room + merge offline-first) | ✅ Completada (2026-08-30) |
+| 8 | Comentarios | ⬜ Pendiente — **siguiente paso** |
 | 9 | Avatar personalizado | ⬜ Pendiente |
 | 10 | Pantallas transversales (Splash, Sidebar, Home, Niveles, Juego, Ajustes, FAQ) | ⬜ Pendiente |
 
@@ -81,7 +81,7 @@ Implementado hasta ahora:
 - Contrato remoto completo: 5 interfaces Retrofit y ~25 DTOs que espejan el backend,
   verificados contra los DTOs reales (camelCase nativo sin `@SerialName`,
   auditoría 2026-08-23).
-- `TokenManager`: JWT en `EncryptedSharedPreferences` (nunca en texto plano).
+- `TokenManager`: JWT y correo del usuario en `EncryptedSharedPreferences` (nunca en texto plano).
 - `JwtInterceptor`: adjunta `Authorization: Bearer <token>` automáticamente.
 - `NetworkModule` (Hilt): OkHttpClient + Retrofit + Json + provisión de las 5 APIs;
   logging HTTP nivel `BASIC` en debug (nunca loguear cuerpos con contraseña/OTP).
@@ -107,6 +107,17 @@ Implementado hasta ahora:
   apagado); `AuthRepository.logout()` en repository y `HomePlaceholderUiState` +
   `HomePlaceholderViewModel` evolucionado (AuthRepository + SesionRepository inyectados);
   **138 tests verdes** (unitarios) e instrumentados **47/47** en físico ABR-LX3 (2026-08-29).
+- **Fase 5 — Recuperación de contraseña:** flujo de 3 pasos (Email -> OTP -> Nueva clave),
+  `resetToken` solo en memoria (D-37), anti-enumeración en UI (D-42); **169 tests verdes**
+  (2026-08-30).
+- **Fase 6 — Eliminar cuenta:** pantalla `EliminarCuentaScreen` con re-verificación de
+  contraseña, diálogo de confirmación, limpieza de sesión atómica e integración en "Mi Cuenta"
+  (Sección Seguridad integrada en tarjeta principal); **181 tests verdes** (unitarios) e
+  instrumentados **60/60** en físico ABR-LX3 (2026-08-30).
+- **Fase 7 — Progreso / Sync:** Room configurado (`EraDatabase`), catálogo oficial de 20
+  niveles (seed JSON), lógica offline-first con merge determinista, aislamiento por usuario
+  (PK por correo) y pantalla de progreso con barra animada; **189 tests verdes** (unitarios)
+  e instrumentados **64/64** en físico ABR-LX3 (2026-08-30).
 
 ## Compilar y ejecutar
 

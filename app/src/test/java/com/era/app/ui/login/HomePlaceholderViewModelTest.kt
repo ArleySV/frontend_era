@@ -234,6 +234,8 @@ class HomePlaceholderViewModelTest {
 
         override fun guardarToken(token: String) { tokenGuardado = token }
         override fun obtenerToken(): String? = tokenGuardado
+        override fun guardarCorreo(correo: String) {}
+        override fun obtenerCorreo(): String? = null
         override fun limpiarToken() { tokenGuardado = null; fueLimpiado = true }
         override fun tieneToken(): Boolean = tokenGuardado != null
     }

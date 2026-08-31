@@ -13,4 +13,5 @@ object EraRoutes {
     const val RECUPERACION_PASO2 = "recuperacion/paso2"
     const val RECUPERACION_PASO3 = "recuperacion/paso3"
     const val ELIMINAR_CUENTA = "eliminar_cuenta"
+    const val PROGRESO = "progreso"
 }

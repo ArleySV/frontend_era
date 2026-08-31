@@ -134,6 +134,8 @@ class EliminarCuentaViewModelTest {
         var fueLimpiado = false
         override fun guardarToken(token: String) {}
         override fun obtenerToken(): String? = null
+        override fun guardarCorreo(correo: String) {}
+        override fun obtenerCorreo(): String? = null
         override fun limpiarToken() { fueLimpiado = true }
         override fun tieneToken(): Boolean = false
     }

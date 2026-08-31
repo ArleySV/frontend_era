@@ -26,12 +26,13 @@ class HomePlaceholderScreenTest {
     fun muestraSesionIniciadaYCerrarSesion() {
         regla.setContent {
             ERATheme {
-                HomePlaceholderScreen(onCerrarSesion = {}, onNavigatePerfil = {})
+                HomePlaceholderScreen(onCerrarSesion = {}, onNavigatePerfil = {}, onNavigateProgreso = {})
             }
         }
         regla.onNodeWithText("Sesión iniciada ✅").assertIsDisplayed()
         regla.onNodeWithText("Cerrar sesión").assertIsDisplayed()
         regla.onNodeWithText("Mi cuenta").assertIsDisplayed()
+        regla.onNodeWithText("Mi progreso").assertIsDisplayed()
     }
 
     @Test
@@ -39,10 +40,22 @@ class HomePlaceholderScreenTest {
         var navega = 0
         regla.setContent {
             ERATheme {
-                HomePlaceholderScreen(onCerrarSesion = {}, onNavigatePerfil = { navega++ })
+                HomePlaceholderScreen(onCerrarSesion = {}, onNavigatePerfil = { navega++ }, onNavigateProgreso = {})
             }
         }
         regla.onNodeWithText("Mi cuenta").performClick()
+        regla.runOnIdle { assertEquals(1, navega) }
+    }
+
+    @Test
+    fun miProgresoInvocaOnNavigateProgreso() {
+        var navega = 0
+        regla.setContent {
+            ERATheme {
+                HomePlaceholderScreen(onCerrarSesion = {}, onNavigatePerfil = {}, onNavigateProgreso = { navega++ })
+            }
+        }
+        regla.onNodeWithText("Mi progreso").performClick()
         regla.runOnIdle { assertEquals(1, navega) }
     }
 
@@ -54,6 +67,7 @@ class HomePlaceholderScreenTest {
                 HomePlaceholderScreen(
                     onCerrarSesion = { visible = true },
                     onNavigatePerfil = {},
+                    onNavigateProgreso = {},
                     dialogoCierreVisible = visible,
                 )
             }
@@ -75,6 +89,7 @@ class HomePlaceholderScreenTest {
                 HomePlaceholderScreen(
                     onCerrarSesion = {},
                     onNavigatePerfil = {},
+                    onNavigateProgreso = {},
                     dialogoCierreVisible = visible,
                     onCancelarCierre = { visible = false; cancela++ },
                     onConfirmarCierre = { confirma++ },
@@ -99,6 +114,7 @@ class HomePlaceholderScreenTest {
                 HomePlaceholderScreen(
                     onCerrarSesion = {},
                     onNavigatePerfil = {},
+                    onNavigateProgreso = {},
                     dialogoCierreVisible = visible,
                     onCancelarCierre = { visible = false },
                     onConfirmarCierre = { confirma++ },

@@ -361,7 +361,7 @@ entre frontend y backend).
 ## 10. Estado actual de este repositorio
 
 **Fase 0 completada.** **Fase 1 completada.** **Fase 2 completada.**
-**Fase 3 completada.** **Fase 4 completada.** **Fase 5 completada.** **Fase 6 completada.**
+**Fase 3 completada.** **Fase 4 completada.** **Fase 5 completada.** **Fase 6 completada.** **Fase 7 completada.**
 
 ### Fase 0 — Preparación del entorno
 
@@ -563,4 +563,16 @@ rama `main`, commit inicial `43d3a0b`).
 - **Integración:** Acceso desde "Mi Cuenta" integrado en el recuadro principal (Sección Seguridad).
 - **Tests:** 181 verdes (31 de fase 5 + 12 de fase 6). Instrumentados **60/60** (57 previos + 3 nuevos).
 
-**Próximo paso:** Fase 7 — Limpieza general y Room (Módulo G).
+### Fase 7 — Progreso / Sync (completada 2026-08-30)
+
+**Plan vinculante:** `docs/fase-07-progreso-sync-analisis.md`, decisiones D-49…D-52.
+
+- **Room:** Configurada `EraDatabase`, `NivelEntity` y `ProgresoNivelEntity` (PK compuesta por `userId`).
+- **Catálogo:** Implementado `trivia_catalog.json` (20 preguntas oficiales) con seed automático en `onCreate`.
+- **Repository:** `RoomProgresoRepository` con lógica offline-first y merge determinista (Forward-only).
+- **Sincronización:** Integración con `GET/POST /progress/sync` y manejo de "dirty bits" locales.
+- **Seguridad:** Aislamiento de progreso por correo electrónico en sesión. Reinicio de progreso con contraseña (`POST /reset`).
+- **UI:** `ProgresoScreen` con barra animada, porcentaje real y total de reintentos acumulados.
+- **Tests:** 189 verdes (181 previos + 8 de fase 7). Instrumentados **64/64** (60 previos + 4 nuevos).
+
+**Próximo paso:** Fase 8 — Comentarios (H, `POST /feedback/comments`).

@@ -29,8 +29,14 @@ class TokenManager @Inject constructor(
 
     fun getToken(): String? = prefs.getString(KEY_SESSION_TOKEN, null)
 
+    fun saveEmail(email: String) {
+        prefs.edit().putString(KEY_USER_EMAIL, email).apply()
+    }
+
+    fun getEmail(): String? = prefs.getString(KEY_USER_EMAIL, null)
+
     fun clearToken() {
-        prefs.edit().remove(KEY_SESSION_TOKEN).apply()
+        prefs.edit().remove(KEY_SESSION_TOKEN).remove(KEY_USER_EMAIL).apply()
     }
 
     fun hasToken(): Boolean = getToken() != null
@@ -38,5 +44,6 @@ class TokenManager @Inject constructor(
     companion object {
         private const val PREFS_FILE_NAME = "era_encrypted_prefs"
         private const val KEY_SESSION_TOKEN = "session_token"
+        private const val KEY_USER_EMAIL = "user_email"
     }
 }

@@ -44,6 +44,7 @@ class MiCuentaViewModel @Inject constructor(
         viewModelScope.launch {
             when (val r = userRepository.obtenerPerfil()) {
                 is Resultado.Exito -> {
+                    sesionRepository.guardarCorreo(r.data.correo)
                     _uiState.update { it.copy(cargando = false, perfil = r.data) }
                 }
                 is Resultado.Fallo -> manejarFallo(r.error)
@@ -88,6 +89,7 @@ class MiCuentaViewModel @Inject constructor(
         viewModelScope.launch {
             when (val r = userRepository.actualizarNombreUsuario(nombre)) {
                 is Resultado.Exito -> {
+                    sesionRepository.guardarCorreo(r.data.correo)
                     _uiState.update {
                         it.copy(
                             guardando = false,

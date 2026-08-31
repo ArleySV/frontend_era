@@ -32,6 +32,7 @@ import com.era.app.ui.theme.ERATheme
 fun HomePlaceholderScreen(
     onCerrarSesion: () -> Unit,
     onNavigatePerfil: () -> Unit,
+    onNavigateProgreso: () -> Unit,
     modifier: Modifier = Modifier,
     dialogoCierreVisible: Boolean = false,
     cerrando: Boolean = false,
@@ -64,6 +65,16 @@ fun HomePlaceholderScreen(
                 ),
             ) {
                 Text(text = "Mi cuenta", fontWeight = FontWeight.Bold)
+            }
+            Spacer(modifier = Modifier.height(12.dp))
+            Button(
+                onClick = onNavigateProgreso,
+                colors = ButtonDefaults.buttonColors(
+                    containerColor = ColorPrimary,
+                    contentColor = ColorTextWhite,
+                ),
+            ) {
+                Text(text = "Mi progreso", fontWeight = FontWeight.Bold)
             }
             Spacer(modifier = Modifier.height(12.dp))
             Button(
@@ -152,7 +163,7 @@ fun HomePlaceholderScreen(
 @Composable
 private fun HomePlaceholderPreview() {
     ERATheme {
-        HomePlaceholderScreen(onCerrarSesion = {}, onNavigatePerfil = {})
+        HomePlaceholderScreen(onCerrarSesion = {}, onNavigatePerfil = {}, onNavigateProgreso = {})
     }
 }
 
@@ -163,6 +174,7 @@ private fun HomePlaceholderDialogoPreview() {
         HomePlaceholderScreen(
             onCerrarSesion = {},
             onNavigatePerfil = {},
+            onNavigateProgreso = {},
             dialogoCierreVisible = true,
         )
     }

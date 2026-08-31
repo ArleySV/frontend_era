@@ -1,0 +1,122 @@
+[
+  {
+    "orden": 1,
+    "pregunta": "¿Cuál es la capital de Francia?",
+    "opciones": ["Madrid", "París", "Roma"],
+    "respuestaCorrecta": 1
+  },
+  {
+    "orden": 2,
+    "pregunta": "¿Cuántos lados tiene un triángulo?",
+    "opciones": ["Cuatro", "Cinco", "Tres"],
+    "respuestaCorrecta": 2
+  },
+  {
+    "orden": 3,
+    "pregunta": "¿Cuánto es 6 × 7?",
+    "opciones": ["42", "36", "49"],
+    "respuestaCorrecta": 0
+  },
+  {
+    "orden": 4,
+    "pregunta": "¿Cuál es el antónimo de complicado?",
+    "opciones": ["Difícil", "Sencillo", "Complejo"],
+    "respuestaCorrecta": 1
+  },
+  {
+    "orden": 5,
+    "pregunta": "¿Cuál es la antepenúltima letra del abecedario?",
+    "opciones": ["W", "Y", "X"],
+    "respuestaCorrecta": 2
+  },
+  {
+    "orden": 6,
+    "pregunta": "¿Cuántas semanas hay en un año?",
+    "opciones": ["48", "52", "60"],
+    "respuestaCorrecta": 1
+  },
+  {
+    "orden": 7,
+    "pregunta": "¿Cuál es el satélite natural de la Tierra?",
+    "opciones": ["Marte", "El Sol", "La Luna"],
+    "respuestaCorrecta": 2
+  },
+  {
+    "orden": 8,
+    "pregunta": "¿Qué color se obtiene al mezclar rojo y azul?",
+    "opciones": ["Verde", "Morado", "Naranja"],
+    "respuestaCorrecta": 1
+  },
+  {
+    "orden": 9,
+    "pregunta": "¿En qué continente se encuentra el río Amazonas?",
+    "opciones": ["África", "Europa", "América"],
+    "respuestaCorrecta": 2
+  },
+  {
+    "orden": 10,
+    "pregunta": "¿Cuál es el continente más grande del mundo?",
+    "opciones": ["África", "Asia", "Europa"],
+    "respuestaCorrecta": 1
+  },
+  {
+    "orden": 11,
+    "pregunta": "¿Cuántas sílabas tiene la palabra \"elefante\"?",
+    "opciones": ["Tres", "Cinco", "Cuatro"],
+    "respuestaCorrecta": 2
+  },
+  {
+    "orden": 12,
+    "pregunta": "¿Cuántos años hay en un milenio?",
+    "opciones": ["100", "1000", "10000"],
+    "respuestaCorrecta": 1
+  },
+  {
+    "orden": 13,
+    "pregunta": "¿Cómo se clasifican los animales que comen carne?",
+    "opciones": ["Herbívoros", "Omnívoros", "Carnívoros"],
+    "respuestaCorrecta": 2
+  },
+  {
+    "orden": 14,
+    "pregunta": "¿Qué fruta es rica en vitamina C?",
+    "opciones": ["Manzana", "Naranja", "Banano"],
+    "respuestaCorrecta": 1
+  },
+  {
+    "orden": 15,
+    "pregunta": "¿En qué año llegó Cristóbal Colón a América?",
+    "opciones": ["1490", "1492", "1500"],
+    "respuestaCorrecta": 1
+  },
+  {
+    "orden": 16,
+    "pregunta": "¿Qué cultura construyó Machu Picchu?",
+    "opciones": ["Maya", "Azteca", "Inca"],
+    "respuestaCorrecta": 2
+  },
+  {
+    "orden": 17,
+    "pregunta": "¿Tres docenas de manzanas equivalen a cuántas?",
+    "opciones": ["24", "36", "48"],
+    "respuestaCorrecta": 1
+  },
+  {
+    "orden": 18,
+    "pregunta": "¿En qué país vivieron los faraones?",
+    "opciones": ["Grecia", "Egipto", "Italia"],
+    "respuestaCorrecta": 1
+  },
+  {
+    "orden": 19,
+    "pregunta": "¿Cómo se dice \"madera\" en inglés?",
+    "opciones": ["Stone", "Tree", "Wood"],
+    "respuestaCorrecta": 2
+  },
+  {
+    "orden": 20,
+    "pregunta": "¿En qué juego se usa el término \"jaque mate\"?",
+    "opciones": ["Damas", "Fútbol", "Ajedrez"],
+    "respuestaCorrecta": 2
+  }
+]
