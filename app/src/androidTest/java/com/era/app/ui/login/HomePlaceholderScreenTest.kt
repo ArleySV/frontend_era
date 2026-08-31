@@ -26,13 +26,19 @@ class HomePlaceholderScreenTest {
     fun muestraSesionIniciadaYCerrarSesion() {
         regla.setContent {
             ERATheme {
-                HomePlaceholderScreen(onCerrarSesion = {}, onNavigatePerfil = {}, onNavigateProgreso = {})
+                HomePlaceholderScreen(
+                    onCerrarSesion = {},
+                    onNavigatePerfil = {},
+                    onNavigateProgreso = {},
+                    onNavigateFaq = {}
+                )
             }
         }
         regla.onNodeWithText("Sesión iniciada ✅").assertIsDisplayed()
         regla.onNodeWithText("Cerrar sesión").assertIsDisplayed()
         regla.onNodeWithText("Mi cuenta").assertIsDisplayed()
         regla.onNodeWithText("Mi progreso").assertIsDisplayed()
+        regla.onNodeWithText("Ayuda y Comentarios").assertIsDisplayed()
     }
 
     @Test
@@ -40,7 +46,12 @@ class HomePlaceholderScreenTest {
         var navega = 0
         regla.setContent {
             ERATheme {
-                HomePlaceholderScreen(onCerrarSesion = {}, onNavigatePerfil = { navega++ }, onNavigateProgreso = {})
+                HomePlaceholderScreen(
+                    onCerrarSesion = {},
+                    onNavigatePerfil = { navega++ },
+                    onNavigateProgreso = {},
+                    onNavigateFaq = {}
+                )
             }
         }
         regla.onNodeWithText("Mi cuenta").performClick()
@@ -52,10 +63,32 @@ class HomePlaceholderScreenTest {
         var navega = 0
         regla.setContent {
             ERATheme {
-                HomePlaceholderScreen(onCerrarSesion = {}, onNavigatePerfil = {}, onNavigateProgreso = { navega++ })
+                HomePlaceholderScreen(
+                    onCerrarSesion = {},
+                    onNavigatePerfil = {},
+                    onNavigateProgreso = { navega++ },
+                    onNavigateFaq = {}
+                )
             }
         }
         regla.onNodeWithText("Mi progreso").performClick()
+        regla.runOnIdle { assertEquals(1, navega) }
+    }
+
+    @Test
+    fun ayudaInvocaOnNavigateFaq() {
+        var navega = 0
+        regla.setContent {
+            ERATheme {
+                HomePlaceholderScreen(
+                    onCerrarSesion = {},
+                    onNavigatePerfil = {},
+                    onNavigateProgreso = {},
+                    onNavigateFaq = { navega++ }
+                )
+            }
+        }
+        regla.onNodeWithText("Ayuda y Comentarios").performClick()
         regla.runOnIdle { assertEquals(1, navega) }
     }
 
@@ -68,6 +101,7 @@ class HomePlaceholderScreenTest {
                     onCerrarSesion = { visible = true },
                     onNavigatePerfil = {},
                     onNavigateProgreso = {},
+                    onNavigateFaq = {},
                     dialogoCierreVisible = visible,
                 )
             }
@@ -90,6 +124,7 @@ class HomePlaceholderScreenTest {
                     onCerrarSesion = {},
                     onNavigatePerfil = {},
                     onNavigateProgreso = {},
+                    onNavigateFaq = {},
                     dialogoCierreVisible = visible,
                     onCancelarCierre = { visible = false; cancela++ },
                     onConfirmarCierre = { confirma++ },
@@ -115,6 +150,7 @@ class HomePlaceholderScreenTest {
                     onCerrarSesion = {},
                     onNavigatePerfil = {},
                     onNavigateProgreso = {},
+                    onNavigateFaq = {},
                     dialogoCierreVisible = visible,
                     onCancelarCierre = { visible = false },
                     onConfirmarCierre = { confirma++ },

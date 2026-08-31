@@ -3,24 +3,36 @@ package com.era.app.utils
 import android.content.Context
 import android.content.SharedPreferences
 import androidx.security.crypto.EncryptedSharedPreferences
-import androidx.security.crypto.MasterKeys
+import androidx.security.crypto.MasterKey
 import dagger.hilt.android.qualifiers.ApplicationContext
 import javax.inject.Inject
 import javax.inject.Singleton
 
-@Suppress("deprecation")
 @Singleton
 class TokenManager @Inject constructor(
-    @ApplicationContext context: Context,
+    @ApplicationContext private val context: Context,
 ) {
-    private val masterKeyAlias = MasterKeys.getOrCreate(MasterKeys.AES256_GCM_SPEC)
+    private val masterKey = MasterKey.Builder(context)
+        .setKeyScheme(MasterKey.KeyScheme.AES256_GCM)
+        .build()
 
-    private val prefs: SharedPreferences = EncryptedSharedPreferences.create(
-        PREFS_FILE_NAME,
-        masterKeyAlias,
+    private val prefs: SharedPreferences by lazy {
+        try {
+            crearPrefs()
+        } catch (e: Exception) {
+            // Si falla (p.ej. por AEADBadTagException tras una actualización o reinstalación),
+            // limpiamos los archivos corruptos y reintentamos una vez.
+            context.deleteSharedPreferences(PREFS_FILE_NAME)
+            crearPrefs()
+        }
+    }
+
+    private fun crearPrefs(): SharedPreferences = EncryptedSharedPreferences.create(
         context,
+        PREFS_FILE_NAME,
+        masterKey,
         EncryptedSharedPreferences.PrefKeyEncryptionScheme.AES256_SIV,
-        EncryptedSharedPreferences.PrefValueEncryptionScheme.AES256_GCM,
+        EncryptedSharedPreferences.PrefValueEncryptionScheme.AES256_GCM
     )
 
     fun saveToken(token: String) {

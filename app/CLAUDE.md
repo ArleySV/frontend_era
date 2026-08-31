@@ -361,7 +361,7 @@ entre frontend y backend).
 ## 10. Estado actual de este repositorio
 
 **Fase 0 completada.** **Fase 1 completada.** **Fase 2 completada.**
-**Fase 3 completada.** **Fase 4 completada.** **Fase 5 completada.** **Fase 6 completada.** **Fase 7 completada.**
+**Fase 3 completada.** **Fase 4 completada.** **Fase 5 completada.** **Fase 6 completada.** **Fase 7 completada.** **Fase 8 completada.**
 
 ### Fase 0 — Preparación del entorno
 
@@ -575,4 +575,15 @@ rama `main`, commit inicial `43d3a0b`).
 - **UI:** `ProgresoScreen` con barra animada, porcentaje real y total de reintentos acumulados.
 - **Tests:** 189 verdes (181 previos + 8 de fase 7). Instrumentados **64/64** (60 previos + 4 nuevos).
 
-**Próximo paso:** Fase 8 — Comentarios (H, `POST /feedback/comments`).
+### Fase 8 — FAQ y Comentarios (completada 2026-08-30)
+
+**Plan vinculante:** `docs/fase-08-faq-comentarios-analisis.md`, decisión D-53.
+
+- **FAQ:** Archivo `faq.json` con 8 preguntas oficiales. Carga 100% offline via `LocalFaqRepository`.
+- **Comentarios:** Integración con `POST /feedback/comments`. Borrador en memoria del ViewModel (D-53).
+- **UI:** `FaqScreen` con tarjetas expandibles y campo multilínea con contador de caracteres.
+- **Seguridad:** Regla de Oro aplicada (cero logs de contenido). Limpieza de sesión ante 401/403.
+- **Robustez:** Estrategia de recuperación en `TokenManager` ante corrupción de `EncryptedSharedPreferences`.
+- **Tests:** 198 unitarios verdes. 69 instrumentados verdes (+5 nuevos).
+
+**Próximo paso:** Fase 9 — Avatar personalizado (I, `GET/POST /avatar`).

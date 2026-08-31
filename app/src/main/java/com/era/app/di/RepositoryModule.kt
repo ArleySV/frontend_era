@@ -1,13 +1,17 @@
 package com.era.app.di
 
 import com.era.app.repository.AuthRepository
+import com.era.app.repository.LocalFaqRepository
 import com.era.app.repository.RemoteAuthRepository
 import com.era.app.repository.RemoteUserRepository
+import com.era.app.repository.RemoteFeedbackRepository
 import com.era.app.repository.RoomProgresoRepository
 import com.era.app.repository.SesionRepository
 import com.era.app.repository.TokenManagerSesion
 import com.era.app.repository.UserRepository
 import com.era.app.repository.ProgresoRepository
+import com.era.app.repository.FaqRepository
+import com.era.app.repository.FeedbackRepository
 import dagger.Binds
 import dagger.Module
 import dagger.hilt.InstallIn
@@ -33,4 +37,12 @@ abstract class RepositoryModule {
     @Binds
     @Singleton
     abstract fun bindProgresoRepository(impl: RoomProgresoRepository): ProgresoRepository
+
+    @Binds
+    @Singleton
+    abstract fun bindFaqRepository(impl: LocalFaqRepository): FaqRepository
+
+    @Binds
+    @Singleton
+    abstract fun bindFeedbackRepository(impl: RemoteFeedbackRepository): FeedbackRepository
 }

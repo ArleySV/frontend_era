@@ -33,6 +33,7 @@ fun HomePlaceholderScreen(
     onCerrarSesion: () -> Unit,
     onNavigatePerfil: () -> Unit,
     onNavigateProgreso: () -> Unit,
+    onNavigateFaq: () -> Unit,
     modifier: Modifier = Modifier,
     dialogoCierreVisible: Boolean = false,
     cerrando: Boolean = false,
@@ -75,6 +76,16 @@ fun HomePlaceholderScreen(
                 ),
             ) {
                 Text(text = "Mi progreso", fontWeight = FontWeight.Bold)
+            }
+            Spacer(modifier = Modifier.height(12.dp))
+            Button(
+                onClick = onNavigateFaq,
+                colors = ButtonDefaults.buttonColors(
+                    containerColor = ColorPrimary,
+                    contentColor = ColorTextWhite,
+                ),
+            ) {
+                Text(text = "Ayuda y Comentarios", fontWeight = FontWeight.Bold)
             }
             Spacer(modifier = Modifier.height(12.dp))
             Button(
@@ -163,7 +174,12 @@ fun HomePlaceholderScreen(
 @Composable
 private fun HomePlaceholderPreview() {
     ERATheme {
-        HomePlaceholderScreen(onCerrarSesion = {}, onNavigatePerfil = {}, onNavigateProgreso = {})
+        HomePlaceholderScreen(
+            onCerrarSesion = {},
+            onNavigatePerfil = {},
+            onNavigateProgreso = {},
+            onNavigateFaq = {}
+        )
     }
 }
 
@@ -175,6 +191,7 @@ private fun HomePlaceholderDialogoPreview() {
             onCerrarSesion = {},
             onNavigatePerfil = {},
             onNavigateProgreso = {},
+            onNavigateFaq = {},
             dialogoCierreVisible = true,
         )
     }

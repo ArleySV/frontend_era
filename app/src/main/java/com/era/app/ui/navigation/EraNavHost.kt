@@ -21,6 +21,8 @@ import com.era.app.ui.perfil.EliminarCuentaViewModel
 import com.era.app.ui.perfil.MiCuentaScreen
 import com.era.app.ui.progreso.ProgresoScreen
 import com.era.app.ui.progreso.ProgresoViewModel
+import com.era.app.ui.faq.FaqScreen
+import com.era.app.ui.faq.FaqViewModel
 import com.era.app.ui.recuperacion.RecuperacionPaso1Screen
 import com.era.app.ui.recuperacion.RecuperacionPaso2Screen
 import com.era.app.ui.recuperacion.RecuperacionPaso3Screen
@@ -67,6 +69,7 @@ fun EraNavHost(
             HomePlaceholderScreen(
                 onNavigatePerfil = { navController.navigate(EraRoutes.PERFIL) },
                 onNavigateProgreso = { navController.navigate(EraRoutes.PROGRESO) },
+                onNavigateFaq = { navController.navigate(EraRoutes.FAQ) },
                 onCerrarSesion = vm::onCerrarSesionClick,
                 dialogoCierreVisible = uiState.dialogoCierreVisible,
                 cerrando = uiState.cerrando,
@@ -112,6 +115,20 @@ fun EraNavHost(
         composable(EraRoutes.PROGRESO) {
             val vm: ProgresoViewModel = hiltViewModel()
             ProgresoScreen(
+                vm = vm,
+                onVolver = { navController.popBackStack() },
+                onSesionExpirada = {
+                    navController.navigate(EraRoutes.LOGIN) {
+                        popUpTo(0) { inclusive = true }
+                    }
+                },
+                snackbarHostState = snackbarHostState
+            )
+        }
+
+        composable(EraRoutes.FAQ) {
+            val vm: FaqViewModel = hiltViewModel()
+            FaqScreen(
                 vm = vm,
                 onVolver = { navController.popBackStack() },
                 onSesionExpirada = {

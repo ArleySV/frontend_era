@@ -1,0 +1,42 @@
+[
+  {
+    "id": 1,
+    "pregunta": "¿Cómo empiezo a jugar?",
+    "respuesta": "Una vez que inicies sesión, presiona el botón \"Trivia\" en la pantalla principal para ver los 20 niveles. ¡Toca el Nivel 1 para comenzar!"
+  },
+  {
+    "id": 2,
+    "pregunta": "¿Qué pasa si me equivoco en una pregunta?",
+    "respuesta": "Tienes intentos ilimitados. Si fallas 2 veces seguidas, el sistema te pedirá un breve descanso de 60 segundos antes de reintentar."
+  },
+  {
+    "id": 3,
+    "pregunta": "¿Para qué edades está recomendada la aplicación?",
+    "respuesta": "Está diseñada para niños de básica primaria, idealmente entre 7 y 11 años."
+  },
+  {
+    "id": 4,
+    "pregunta": "¿Cómo se garantizan la seguridad y privacidad de mi hijo?",
+    "respuesta": "El registro requiere mediación parental y los datos sensibles (como el JWT) se guardan cifrados en el Keystore del dispositivo."
+  },
+  {
+    "id": 5,
+    "pregunta": "¿La aplicación contiene anuncios o compras integradas?",
+    "respuesta": "No. ERA es una herramienta educativa gratuita y segura, sin publicidad ni cargos extra."
+  },
+  {
+    "id": 6,
+    "pregunta": "¿La aplicación tiene posibilidad de escalar en un futuro?",
+    "respuesta": "Sí, el diseño permite añadir nuevos niveles o temáticas mediante actualizaciones del catálogo local."
+  },
+  {
+    "id": 7,
+    "pregunta": "¿Qué hago si se me olvida la contraseña?",
+    "respuesta": "Usa la opción \"¿Olvidaste tu contraseña?\" en el Login. Recibirás un código de 6 dígitos en tu correo para crear una nueva clave."
+  },
+  {
+    "id": 8,
+    "pregunta": "¿Cómo eliminar mi cuenta y qué ocurre con mis datos?",
+    "respuesta": "Puedes hacerlo desde Ajustes. Tus datos se desactivarán de forma permanente y tu correo no podrá usarse para nuevos registros por seguridad."
+  }
+]

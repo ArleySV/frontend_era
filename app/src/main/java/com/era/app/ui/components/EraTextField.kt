@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
@@ -53,7 +54,9 @@ fun EraTextField(
     descripcionIconoFin: String? = null,
     onIconoFinClick: (() -> Unit)? = null,
     keyboardOptions: KeyboardOptions = KeyboardOptions.Default,
-    visualTransformation: VisualTransformation = VisualTransformation.None
+    visualTransformation: VisualTransformation = VisualTransformation.None,
+    singleLine: Boolean = true,
+    minLines: Int = 1
 ) {
     Column(modifier = modifier.fillMaxWidth().widthIn(max = 358.dp)) {
         Row(verticalAlignment = Alignment.CenterVertically) {
@@ -74,7 +77,8 @@ fun EraTextField(
         BasicTextField(
             value = value,
             onValueChange = onValueChange,
-            singleLine = true,
+            singleLine = singleLine,
+            minLines = minLines,
             textStyle = MaterialTheme.typography.bodyLarge.copy(color = ColorTextDark),
             keyboardOptions = keyboardOptions,
             visualTransformation = visualTransformation,
@@ -86,8 +90,8 @@ fun EraTextField(
             decorationBox = { innerTextField ->
                 Row(
                     modifier = Modifier
-                        .height(53.dp)
-                        .padding(horizontal = 16.dp),
+                        .heightIn(min = 53.dp)
+                        .padding(horizontal = 16.dp, vertical = 8.dp),
                     verticalAlignment = Alignment.CenterVertically,
                     horizontalArrangement = Arrangement.Start
                 ) {

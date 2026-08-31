@@ -59,7 +59,7 @@ com.era.app/
 
 ## Estado actual
 
-**Fase 0, 1, 2, 3, 4, 5, 6 y 7 completadas.** Detalle del avance fase por fase:
+**Fase 0, 1, 2, 3, 4, 5, 6, 7 y 8 completadas.** Detalle del avance fase por fase:
 
 | Fase | Módulo | Estado |
 |---|---|---|
@@ -71,8 +71,8 @@ com.era.app/
 | 5 | Recuperación de contraseña | ✅ Completada (2026-08-30) |
 | 6 | Eliminar cuenta | ✅ Completada (2026-08-30) |
 | 7 | Progreso / Sync (Room + merge offline-first) | ✅ Completada (2026-08-30) |
-| 8 | Comentarios | ⬜ Pendiente — **siguiente paso** |
-| 9 | Avatar personalizado | ⬜ Pendiente |
+| 8 | FAQ + Comentarios | ✅ Completada (2026-08-30) |
+| 9 | Avatar personalizado | ⬜ Pendiente — **siguiente paso** |
 | 10 | Pantallas transversales (Splash, Sidebar, Home, Niveles, Juego, Ajustes, FAQ) | ⬜ Pendiente |
 
 Implementado hasta ahora:
@@ -118,6 +118,10 @@ Implementado hasta ahora:
   niveles (seed JSON), lógica offline-first con merge determinista, aislamiento por usuario
   (PK por correo) y pantalla de progreso con barra animada; **189 tests verdes** (unitarios)
   e instrumentados **64/64** en físico ABR-LX3 (2026-08-30).
+- **Fase 8 — FAQ + Comentarios:** Sección informativa offline (8 preguntas) con tarjetas
+  expandibles y canal de sugerencias online (máx 2000 caracteres); implementación de
+  recuperación automática de Keystore en `TokenManager`; **198 tests verdes** (unitarios)
+  e instrumentados **69/69** en físico ABR-LX3 (2026-08-30).
 
 ## Compilar y ejecutar
 
