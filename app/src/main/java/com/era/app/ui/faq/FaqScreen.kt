@@ -112,6 +112,16 @@ internal fun FaqContent(
                 ) {
                     CircularProgressIndicator(color = ColorPrimary)
                 }
+            } else if (uiState.errorFaqs != null) {
+                Text(
+                    text = uiState.errorFaqs.mensajeUsuario(),
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = ColorTextMuted,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(vertical = 16.dp)
+                        .testTag("errorFaqs")
+                )
             } else {
                 uiState.faqs.forEach { faq ->
                     FaqCard(faq = faq)

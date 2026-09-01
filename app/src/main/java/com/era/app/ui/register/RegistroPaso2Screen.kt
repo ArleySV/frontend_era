@@ -30,9 +30,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
-import androidx.compose.ui.draw.shadow
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
@@ -46,11 +43,7 @@ import com.era.app.ui.components.EraRegSecondaryButton
 import com.era.app.ui.components.EraTextField
 import com.era.app.ui.components.InfoBox
 import com.era.app.ui.components.StepIndicator
-import com.era.app.ui.theme.ColorAvatarBorderDefault
-import com.era.app.ui.theme.ColorAvatarPreset1
-import com.era.app.ui.theme.ColorAvatarPreset2
-import com.era.app.ui.theme.ColorAvatarPreset3
-import com.era.app.ui.theme.ColorPrimary
+import com.era.app.ui.components.avatar.AvatarSelector
 import com.era.app.ui.theme.ColorTextMuted
 import com.era.app.ui.theme.ERATheme
 import com.era.app.utils.CriteriosContrasena
@@ -193,7 +186,7 @@ internal fun RegistroPaso2Content(
                 Spacer(modifier = Modifier.height(8.dp))
                 AvatarSelector(
                     seleccionado = avatarSeleccionado,
-                    onSelect = onAvatarSeleccionar,
+                    onSeleccionar = onAvatarSeleccionar,
                 )
                 if (avatarError != null) {
                     Spacer(modifier = Modifier.height(4.dp))
@@ -265,64 +258,6 @@ internal fun RegistroPaso2Content(
                 onClick = onContinuar,
                 modifier = Modifier.weight(1f),
             )
-        }
-    }
-}
-
-@Composable
-private fun AvatarSelector(
-    seleccionado: Int?,
-    onSelect: (Int) -> Unit,
-    modifier: Modifier = Modifier,
-) {
-    val presets = listOf(
-        1 to ColorAvatarPreset1,
-        2 to ColorAvatarPreset2,
-        3 to ColorAvatarPreset3,
-    )
-    Row(
-        modifier = modifier,
-        horizontalArrangement = Arrangement.spacedBy(8.dp),
-    ) {
-        presets.forEach { (id, color) ->
-            val isSelected = seleccionado == id
-            Box(
-                modifier = Modifier
-                    .size(49.dp)
-                    .then(
-                        if (isSelected) {
-                            Modifier.shadow(4.dp, CircleShape, ambientColor = ColorPrimary.copy(alpha = 0.4f), spotColor = ColorPrimary.copy(alpha = 0.4f))
-                        } else {
-                            Modifier
-                        },
-                    )
-                    .clip(CircleShape)
-                    .then(
-                        if (isSelected) {
-                            Modifier.border(2.5.dp, ColorPrimary, CircleShape)
-                        } else {
-                            Modifier.border(1.5.dp, ColorAvatarBorderDefault, CircleShape)
-                        },
-                    )
-                    .clip(CircleShape)
-                    .clickable { onSelect(id) },
-                contentAlignment = Alignment.Center,
-            ) {
-                Box(
-                    modifier = Modifier
-                        .size(37.dp)
-                        .clip(CircleShape)
-                        .background(color),
-                    contentAlignment = Alignment.Center,
-                ) {
-                    Text(
-                        text = "$id",
-                        color = Color.White,
-                        style = MaterialTheme.typography.titleMedium,
-                        fontWeight = FontWeight.Bold,
-                    )
-                }
-            }
         }
     }
 }

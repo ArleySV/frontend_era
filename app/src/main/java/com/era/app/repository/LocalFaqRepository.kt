@@ -2,6 +2,7 @@ package com.era.app.repository
 
 import android.content.Context
 import com.era.app.data.model.FaqItem
+import com.era.app.utils.EraError
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.serialization.json.Json
 import javax.inject.Inject
@@ -20,8 +21,11 @@ class LocalFaqRepository @Inject constructor(
             val faqs = json.decodeFromString<List<FaqItem>>(faqJson)
             Resultado.Exito(faqs)
         } catch (e: Exception) {
-            // Reutilizamos el mapeo de errores del proyecto para consistencia
-            Resultado.Fallo(com.era.app.utils.ErrorMapper.desdeThrowable(e))
+            // Fallo de lectura de un asset local: no es un error de red, así que no
+            // pasamos por ErrorMapper.desdeThrowable (mapearía a ErrorConexion).
+            Resultado.Fallo(
+                EraError.Validacion(listOf("No se pudo cargar las preguntas frecuentes"))
+            )
         }
     }
 }

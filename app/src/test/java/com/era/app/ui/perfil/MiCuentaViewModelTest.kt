@@ -1,9 +1,12 @@
 package com.era.app.ui.perfil
 
 import com.era.app.remote.dto.user.UserProfile
+import com.era.app.repository.AvatarRepository
 import com.era.app.repository.Resultado
 import com.era.app.repository.SesionRepository
 import com.era.app.repository.UserRepository
+import com.era.app.utils.ArchivoAvatar
+import com.era.app.utils.AvatarFileValidator
 import com.era.app.utils.EraError
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -26,6 +29,7 @@ class MiCuentaViewModelTest {
 
     private val dispatcher = StandardTestDispatcher()
     private lateinit var repo: FakeUserRepository
+    private lateinit var avatarRepo: FakeAvatarRepository
     private lateinit var sesion: FakeSesionRepository
     private lateinit var vm: MiCuentaViewModel
 
@@ -41,8 +45,9 @@ class MiCuentaViewModelTest {
     fun setUp() {
         Dispatchers.setMain(dispatcher)
         repo = FakeUserRepository()
+        avatarRepo = FakeAvatarRepository()
         sesion = FakeSesionRepository()
-        vm = MiCuentaViewModel(repo, sesion)
+        vm = MiCuentaViewModel(repo, avatarRepo, sesion)
     }
 
     @After
@@ -238,6 +243,128 @@ class MiCuentaViewModelTest {
         assertFalse(eventos.any { it is MiCuentaEvento.NavegarALogin })
     }
 
+    // ---------- Avatar ----------
+
+    @Test
+    fun `onCambiarAvatarClick abre selector y marca preset actual`() = runTest {
+        repo.encolarObtener(Resultado.Exito(perfil))
+        vm.onEntrar()
+        advanceUntilIdle()
+
+        vm.onCambiarAvatarClick()
+
+        assertTrue(vm.uiState.value.selectorAvatarAbierto)
+        assertEquals(1, vm.uiState.value.avatarPresetSeleccionado)
+    }
+
+    @Test
+    fun `onSeleccionarPreset hace vuelta a preset local y cierra selector`() = runTest {
+        repo.encolarObtener(Resultado.Exito(perfil))
+        vm.onEntrar()
+        advanceUntilIdle()
+        vm.onCambiarAvatarClick()
+        assertTrue(vm.uiState.value.selectorAvatarAbierto)
+
+        vm.onSeleccionarPreset(2)
+
+        assertFalse(vm.uiState.value.selectorAvatarAbierto)
+        assertEquals(2, vm.uiState.value.avatarPresetSeleccionado)
+        assertNull(vm.uiState.value.bytesAvatarPersonalizado)
+        assertEquals("preset:2", vm.uiState.value.perfil?.avatar)
+        assertNull(vm.uiState.value.errorAvatar)
+    }
+
+    @Test
+    fun `onAvatarSeleccionado con mime invalido setea errorAvatar`() = runTest {
+        repo.encolarObtener(Resultado.Exito(perfil))
+        vm.onEntrar()
+        advanceUntilIdle()
+
+        vm.onAvatarSeleccionado(Resultado.Fallo(EraError.Validacion(listOf("Formato no soportado"))))
+
+        assertTrue(vm.uiState.value.errorAvatar is EraError.Validacion)
+        assertFalse(vm.uiState.value.selectorAvatarAbierto)
+        assertFalse(vm.uiState.value.subiendoAvatar)
+    }
+
+    @Test
+    fun `onAvatarSeleccionado con bytes grandes setea errorAvatar`() = runTest {
+        repo.encolarObtener(Resultado.Exito(perfil))
+        vm.onEntrar()
+        advanceUntilIdle()
+
+        vm.onAvatarSeleccionado(AvatarFileValidator.validar(AvatarFileValidator.MAX_BYTES_AVATAR + 1, "image/png"))
+
+        assertTrue(vm.uiState.value.errorAvatar is EraError.Validacion)
+        assertFalse(vm.uiState.value.subiendoAvatar)
+    }
+
+    @Test
+    fun `onAvatarSeleccionado valido sube, refresca perfil y guarda bytes`() = runTest {
+        repo.encolarObtener(Resultado.Exito(perfil))
+        vm.onEntrar()
+        advanceUntilIdle()
+
+        val perfilCustom = perfil.copy(avatar = "custom:abc.png")
+        avatarRepo.encolarSubir(Resultado.Exito(Unit))
+        repo.encolarObtener(Resultado.Exito(perfilCustom))
+        avatarRepo.encolarObtenerBytes(Resultado.Exito(byteArrayOf(9, 9, 9)))
+
+        vm.onAvatarSeleccionado(Resultado.Exito(ArchivoAvatar(byteArrayOf(1, 2, 3), "foto.png", "image/png")))
+        advanceUntilIdle()
+
+        assertFalse(vm.uiState.value.subiendoAvatar)
+        assertFalse(vm.uiState.value.selectorAvatarAbierto)
+        assertTrue(vm.uiState.value.bytesAvatarPersonalizado!!.contentEquals(byteArrayOf(9, 9, 9)))
+        assertEquals("custom:abc.png", vm.uiState.value.perfil?.avatar)
+        assertNull(vm.uiState.value.errorAvatar)
+    }
+
+    @Test
+    fun `subirAvatar con fallo de red setea errorAvatar`() = runTest {
+        repo.encolarObtener(Resultado.Exito(perfil))
+        vm.onEntrar()
+        advanceUntilIdle()
+
+        avatarRepo.encolarSubir(Resultado.Fallo(EraError.ErrorConexion))
+
+        vm.onAvatarSeleccionado(Resultado.Exito(ArchivoAvatar(byteArrayOf(1, 2, 3), "foto.png", "image/png")))
+        advanceUntilIdle()
+
+        assertFalse(vm.uiState.value.subiendoAvatar)
+        assertEquals(EraError.ErrorConexion, vm.uiState.value.errorAvatar)
+    }
+
+    @Test
+    fun `subirAvatar con SesionExpirada limpia sesion y navega a login`() = runTest {
+        repo.encolarObtener(Resultado.Exito(perfil))
+        vm.onEntrar()
+        advanceUntilIdle()
+        sesion.tokenGuardado = "token_previo"
+        avatarRepo.encolarSubir(Resultado.Fallo(EraError.SesionExpirada))
+        val eventos = mutableListOf<MiCuentaEvento>()
+        val job = launch { vm.eventos.collect { eventos += it } }
+
+        vm.onAvatarSeleccionado(Resultado.Exito(ArchivoAvatar(byteArrayOf(1, 2, 3), "foto.png", "image/png")))
+        advanceUntilIdle()
+
+        job.cancel()
+        assertTrue(sesion.fueLimpiado)
+        assertTrue(eventos.any { it is MiCuentaEvento.NavegarALogin })
+    }
+
+    @Test
+    fun `al entrar con avatar custom carga los bytes`() = runTest {
+        val perfilCustom = perfil.copy(avatar = "custom:abc.png")
+        repo.encolarObtener(Resultado.Exito(perfilCustom))
+        avatarRepo.encolarObtenerBytes(Resultado.Exito(byteArrayOf(5, 5, 5)))
+
+        vm.onEntrar()
+        advanceUntilIdle()
+
+        assertTrue(vm.uiState.value.bytesAvatarPersonalizado!!.contentEquals(byteArrayOf(5, 5, 5)))
+    }
+
     // ---------- Fakes ----------
 
     private class FakeUserRepository : UserRepository {
@@ -258,6 +385,20 @@ class MiCuentaViewModelTest {
         }
 
         override suspend fun eliminarCuenta(contrasena: String): Resultado<Unit> = error("No usado")
+    }
+
+    private class FakeAvatarRepository : AvatarRepository {
+        private val subirQueue = ArrayDeque<Resultado<Unit>>()
+        private val obtenerBytesQueue = ArrayDeque<Resultado<ByteArray>>()
+
+        fun encolarSubir(respuesta: Resultado<Unit>) { subirQueue += respuesta }
+        fun encolarObtenerBytes(respuesta: Resultado<ByteArray>) { obtenerBytesQueue += respuesta }
+
+        override suspend fun subirAvatar(bytes: ByteArray, filename: String?, mimeType: String): Resultado<Unit> =
+            subirQueue.removeFirstOrNull() ?: Resultado.Exito(Unit)
+
+        override suspend fun obtenerAvatarBytes(): Resultado<ByteArray> =
+            obtenerBytesQueue.removeFirstOrNull() ?: Resultado.Exito(ByteArray(0))
     }
 
     private class FakeSesionRepository : SesionRepository {

@@ -72,7 +72,7 @@ com.era.app/
 | 6 | Eliminar cuenta | ✅ Completada (2026-08-30) |
 | 7 | Progreso / Sync (Room + merge offline-first) | ✅ Completada (2026-08-30) |
 | 8 | FAQ + Comentarios | ✅ Completada (2026-08-30) |
-| 9 | Avatar personalizado | ⬜ Pendiente — **siguiente paso** |
+| 9 | Avatar personalizado | ✅ Completada (2026-08-31; fix UI D-63 2026-09-01) — siguiente: Fase 10 |
 | 10 | Pantallas transversales (Splash, Sidebar, Home, Niveles, Juego, Ajustes, FAQ) | ⬜ Pendiente |
 
 Implementado hasta ahora:
@@ -121,7 +121,27 @@ Implementado hasta ahora:
 - **Fase 8 — FAQ + Comentarios:** Sección informativa offline (8 preguntas) con tarjetas
   expandibles y canal de sugerencias online (máx 2000 caracteres); implementación de
   recuperación automática de Keystore en `TokenManager`; **198 tests verdes** (unitarios)
-  e instrumentados **69/69** en físico ABR-LX3 (2026-08-30).
+  e instrumentados **69/69** en físico ABR-LX3 (2026-08-30). *Revisión 2026-08-31: guard
+  de longitud de comentario a 2000 exacto (sin estado residual 2001–2100), fallo de lectura
+  de FAQ local ya no se mapea a `ErrorConexion` (se muestra texto de error en pantalla), y
+  trazado en CLAUDE.md del cambio de alcance `MasterKeys`→`MasterKey.Builder` en
+  `TokenManager`.*
+- **Fase 9 — Avatar personalizado (Módulo I):** implementación **completada (2026-08-31)**.
+  Subida por picker (`PickVisualMedia` con fallback) y presets locales (D-58), validación
+  pura `AvatarFileValidator` (≤ 2 MB, `jpeg/png/webp`), descarga `GET /users/me/avatar`
+  renderizada con Coil (D-55), `AvatarSelector` compartido (D-59), cero logs de binario/
+  filename (D-61). Se trazó **D-62**: la firma de `AvatarApi` pasó a tipo directo
+  (`uploadAvatar(): Unit`, `getAvatar(): ResponseBody`) porque `Response<T>` no lanza
+  `HttpException` y rompía el patrón `llamar`+`aEraError`. **226 tests verdes** (unitarios,
+  +28 nuevos: `AvatarFileValidatorTest`, `AvatarRepositoryTest` MockWebServer,
+  `MiCuentaViewModelTest`). Instrumentados `CambiarAvatarTest` (7) pendientes de ejecutar
+  en dispositivo.
+  **Corrección de UI (2026-09-01, D-63):** el trigger pasó del link "Cambiar avatar" al
+  **toque directo sobre la foto** (`avatarTrigger`) y el selector se muestra como
+  **`AlertDialog` modal overlay** (título "Elegir un buen avatar", presets + "+", botón
+  "Cerrar") — en el emulador el link y el selector inline se superponían a "Nombre del
+  menor"/"Correo electrónico". `errorAvatar` ahora se reporta por `Snackbar`. Solo se tocó
+  la capa UI y el `CambiarAvatarTest`; build y 226 unitarios BUILD SUCCESSFUL.
 
 ## Compilar y ejecutar
 

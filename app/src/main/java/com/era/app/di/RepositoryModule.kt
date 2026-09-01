@@ -1,8 +1,10 @@
 package com.era.app.di
 
 import com.era.app.repository.AuthRepository
+import com.era.app.repository.AvatarRepository
 import com.era.app.repository.LocalFaqRepository
 import com.era.app.repository.RemoteAuthRepository
+import com.era.app.repository.RemoteAvatarRepository
 import com.era.app.repository.RemoteUserRepository
 import com.era.app.repository.RemoteFeedbackRepository
 import com.era.app.repository.RoomProgresoRepository
@@ -45,4 +47,8 @@ abstract class RepositoryModule {
     @Binds
     @Singleton
     abstract fun bindFeedbackRepository(impl: RemoteFeedbackRepository): FeedbackRepository
+
+    @Binds
+    @Singleton
+    abstract fun bindAvatarRepository(impl: RemoteAvatarRepository): AvatarRepository
 }

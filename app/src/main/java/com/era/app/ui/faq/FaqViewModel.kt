@@ -46,8 +46,8 @@ class FaqViewModel @Inject constructor(
     }
 
     fun onComentarioChange(nuevo: String) {
-        // Limitación local preventiva de UI
-        if (nuevo.length <= 2100) { 
+        // Limitación local preventiva de UI (límite oficial 2000)
+        if (nuevo.length <= 2000) {
             _uiState.update { it.copy(comentario = nuevo, errorComentario = null) }
         }
     }

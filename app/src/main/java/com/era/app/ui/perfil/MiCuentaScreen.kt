@@ -1,8 +1,17 @@
 package com.era.app.ui.perfil
 
+import android.content.Context
+import android.content.ContentResolver
+import android.content.res.AssetFileDescriptor
+import android.net.Uri
+import android.provider.OpenableColumns
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.PickVisualMediaRequest
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -36,12 +45,16 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -50,17 +63,23 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.zIndex
 import androidx.hilt.navigation.compose.hiltViewModel
+import coil3.compose.AsyncImage
+import coil3.compose.AsyncImagePainter
 import com.era.app.R
 import com.era.app.remote.dto.user.UserProfile
 import com.era.app.ui.components.EraTextField
 import com.era.app.ui.components.SettingsCard
 import com.era.app.ui.components.SettingsCardRow
 import com.era.app.ui.components.SettingsHeader
+import com.era.app.ui.components.avatar.AvatarSelector
 import com.era.app.ui.theme.ColorError
 import com.era.app.ui.theme.ColorPrimary
 import com.era.app.ui.theme.ColorPrimaryLight
 import com.era.app.ui.theme.ColorTextWhite
 import com.era.app.ui.theme.ERATheme
+import com.era.app.repository.Resultado
+import com.era.app.utils.ArchivoAvatar
+import com.era.app.utils.AvatarFileValidator
 import com.era.app.utils.Validators
 import com.era.app.utils.mensajeUsuario
 
@@ -75,6 +94,18 @@ fun MiCuentaScreen(
     val uiState by viewModel.uiState.collectAsState()
     val eventos = viewModel.eventos
     val snackbarHostState = remember { SnackbarHostState() }
+    val context = LocalContext.current
+
+    val pickMedia = rememberLauncherForActivityResult(
+        ActivityResultContracts.PickVisualMedia(),
+    ) { uri ->
+        if (uri != null) {
+            val resultado = leerImagenDesdeUri(context, uri)
+            if (resultado != null) {
+                viewModel.onAvatarSeleccionado(resultado)
+            }
+        }
+    }
 
     LaunchedEffect(Unit) {
         viewModel.onEntrar()
@@ -83,6 +114,13 @@ fun MiCuentaScreen(
                 is MiCuentaEvento.NavegarALogin -> onNavegarALogin()
                 is MiCuentaEvento.MostrarSnackbar -> snackbarHostState.showSnackbar(evento.mensaje)
             }
+        }
+    }
+
+    LaunchedEffect(uiState.errorAvatar) {
+        uiState.errorAvatar?.let { error ->
+            snackbarHostState.showSnackbar(error.mensajeUsuario())
+            viewModel.onLimpiarErrorAvatar()
         }
     }
 
@@ -96,6 +134,10 @@ fun MiCuentaScreen(
             onGuardar = viewModel::onGuardarClick,
             onReintentar = viewModel::onReintentar,
             onEliminarCuenta = onNavegarAEliminarCuenta,
+            onCambiarAvatar = viewModel::onCambiarAvatarClick,
+            onCerrarSelector = viewModel::onCerrarSelector,
+            onSeleccionarPreset = viewModel::onSeleccionarPreset,
+            onSubirFoto = { pickMedia.launch(PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly)) },
         )
         SnackbarHost(
             hostState = snackbarHostState,
@@ -114,6 +156,10 @@ internal fun MiCuentaContent(
     onGuardar: () -> Unit,
     onReintentar: () -> Unit,
     onEliminarCuenta: () -> Unit,
+    onCambiarAvatar: () -> Unit = {},
+    onCerrarSelector: () -> Unit = {},
+    onSeleccionarPreset: (Int) -> Unit = {},
+    onSubirFoto: () -> Unit = {},
     modifier: Modifier = Modifier,
 ) {
     Column(modifier = modifier.fillMaxSize()) {
@@ -243,7 +289,10 @@ internal fun MiCuentaContent(
                             }
                             AvatarPerfil(
                                 avatar = perfil.avatar,
+                                bytesAvatarPersonalizado = uiState.bytesAvatarPersonalizado,
+                                subiendoAvatar = uiState.subiendoAvatar,
                                 nombreMenor = perfil.nombreMenor,
+                                onClick = onCambiarAvatar,
                                 modifier = Modifier
                                     .align(Alignment.TopCenter)
                                     .zIndex(1f),
@@ -265,13 +314,46 @@ internal fun MiCuentaContent(
             onGuardar = onGuardar,
         )
     }
+
+    if (uiState.selectorAvatarAbierto) {
+        AlertDialog(
+            onDismissRequest = onCerrarSelector,
+            title = {
+                Text(
+                    text = "Elegir un buen avatar",
+                    fontWeight = FontWeight.Bold,
+                )
+            },
+            text = {
+                AvatarSelector(
+                    seleccionado = uiState.avatarPresetSeleccionado,
+                    onSeleccionar = onSeleccionarPreset,
+                    mostrarMas = true,
+                    onMas = onSubirFoto,
+                    modifier = Modifier.fillMaxWidth(),
+                )
+            },
+            confirmButton = {
+                TextButton(onClick = onCerrarSelector) {
+                    Text(
+                        text = "Cerrar",
+                        color = ColorPrimary,
+                        fontWeight = FontWeight.Medium,
+                    )
+                }
+            },
+        )
+    }
 }
 
 @Composable
 private fun AvatarPerfil(
     avatar: String?,
+    bytesAvatarPersonalizado: ByteArray?,
+    subiendoAvatar: Boolean,
     nombreMenor: String,
     modifier: Modifier = Modifier,
+    onClick: () -> Unit = {},
 ) {
     val iniciales = nombreMenor
         .trim()
@@ -281,28 +363,55 @@ private fun AvatarPerfil(
         .joinToString("") { it.take(1).uppercase() }
         .ifEmpty { "?" }
 
+    var cargandoImagen by remember { mutableStateOf(false) }
+
     Box(
         modifier = modifier
             .size(100.dp)
             .shadow(elevation = 6.dp, shape = CircleShape)
             .background(ColorPrimaryLight)
-            .border(width = 4.dp, color = ColorTextWhite, shape = CircleShape),
+            .border(width = 4.dp, color = ColorTextWhite, shape = CircleShape)
+            .clickable(onClick = onClick)
+            .testTag("avatarTrigger"),
         contentAlignment = Alignment.Center,
     ) {
         val preset = avatar?.let { extraerPreset(it) }
-        if (preset != null) {
-            Image(
-                painter = painterResource(preset),
-                contentDescription = "Avatar",
-                contentScale = ContentScale.Crop,
-                modifier = Modifier.fillMaxSize(),
-            )
-        } else {
-            Text(
-                text = iniciales,
-                fontSize = 32.sp,
-                fontWeight = FontWeight.Bold,
+        val esCustom = avatar?.startsWith("custom:") == true
+
+        when {
+            esCustom && bytesAvatarPersonalizado != null -> {
+                AsyncImage(
+                    model = bytesAvatarPersonalizado,
+                    contentDescription = "Avatar",
+                    contentScale = ContentScale.Crop,
+                    onState = { state ->
+                        cargandoImagen = state is AsyncImagePainter.State.Loading
+                    },
+                    modifier = Modifier.fillMaxSize(),
+                )
+            }
+            preset != null -> {
+                Image(
+                    painter = painterResource(preset),
+                    contentDescription = "Avatar",
+                    contentScale = ContentScale.Crop,
+                    modifier = Modifier.fillMaxSize(),
+                )
+            }
+            else -> {
+                Text(
+                    text = iniciales,
+                    fontSize = 32.sp,
+                    fontWeight = FontWeight.Bold,
+                    color = ColorPrimary,
+                )
+            }
+        }
+
+        if (subiendoAvatar || (esCustom && bytesAvatarPersonalizado != null && cargandoImagen)) {
+            CircularProgressIndicator(
                 color = ColorPrimary,
+                modifier = Modifier.size(28.dp),
             )
         }
     }
@@ -313,6 +422,59 @@ private fun extraerPreset(avatar: String): Int? = when (avatar) {
     "preset:2" -> R.drawable.avatar_preset_2
     "preset:3" -> R.drawable.avatar_preset_3
     else -> null
+}
+
+/**
+ * Lee de la URI de la imagen seleccionada y delega la validación al helper puro (D-57).
+ * Se ejecuta en la capa UI (con ContentResolver de LocalContext). Si el tamaño del
+ * archivo (vía AssetFileDescriptor.length) supera el límite NO se lee el binario en
+ * memoria y se usa la sobrecarga `validar(size, mime)`; si está dentro del límite se
+ * leen los bytes y se valida con `validar(bytes, ...)`. Cero logs de bytes/filename/URI.
+ * Devuelve el Resultado ya validado, o null si no se pudo leer.
+ */
+private fun leerImagenDesdeUri(context: Context, uri: Uri): Resultado<ArchivoAvatar>? {
+    return try {
+        val resolver = context.contentResolver
+        val mimeType = resolver.getType(uri)
+        val filename = consultarNombreArchivo(resolver, uri)
+
+        val fd: AssetFileDescriptor? = resolver.openAssetFileDescriptor(uri, "r")
+        val longitud = fd?.length
+        fd?.close()
+
+        if (longitud == null || longitud <= AvatarFileValidator.MAX_BYTES_AVATAR) {
+            val bytes = resolver.openInputStream(uri)?.use { it.readBytes() } ?: return null
+            AvatarFileValidator.validar(bytes, filename, mimeType)
+        } else {
+            // Archivo demasiado grande: no leemos el binario (D-57) y validamos solo por
+            // tamaño/MIME. La sobrecarga SIN bytes evita fabricar un ByteArray sintético.
+            AvatarFileValidator.validar(longitud, mimeType)
+        }
+    } catch (e: Exception) {
+        null
+    }
+}
+
+private fun consultarNombreArchivo(resolver: ContentResolver, uri: Uri): String? {
+    return try {
+        val cursor = resolver.query(
+            uri,
+            arrayOf(OpenableColumns.DISPLAY_NAME),
+            null,
+            null,
+            null,
+        )
+        cursor?.use {
+            if (it.moveToFirst()) {
+                val idx = it.getColumnIndex(OpenableColumns.DISPLAY_NAME)
+                if (idx >= 0) it.getString(idx) else null
+            } else {
+                null
+            }
+        }
+    } catch (e: Exception) {
+        null
+    }
 }
 
 @Composable

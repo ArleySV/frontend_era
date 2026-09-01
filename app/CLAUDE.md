@@ -586,4 +586,38 @@ rama `main`, commit inicial `43d3a0b`).
 - **Robustez:** Estrategia de recuperación en `TokenManager` ante corrupción de `EncryptedSharedPreferences`.
 - **Tests:** 198 unitarios verdes. 69 instrumentados verdes (+5 nuevos).
 
-**Próximo paso:** Fase 9 — Avatar personalizado (I, `GET/POST /avatar`).
+> **Cambio de alcance (trazado, regla 3/10):** en esta fase se tocó
+> `app/src/main/java/com/era/app/utils/TokenManager.kt`, fuera del plan §9 de la fase:
+> se migró `MasterKeys` (deprecado) → `MasterKey.Builder` (`AES256_GCM`) y se añadió una
+> estrategia de recuperación ante corrupción de `EncryptedSharedPreferences`
+> (`deleteSharedPreferences` + reintento único, p. ej. ante `AEADBadTagException` tras una
+> actualización/reinstalación). Justificación: fix de robustez **transversal** al login/sesión,
+> evita que una corrupción del store cifrado rompa el arranque y bloquee la app.
+
+**Próximo paso:** Fase 10 — Pantallas transversales (carga, sidebar, home, niveles, juego, ajustes, FAQ offline).
+**Estado de la Fase 9 (2026-08-31):** **implementación completada**. Plan
+`docs/fase-09-avatar-analisis.md` **aprobado para implementación** tras resolver las 3
+observaciones (D-59 extracción de `AvatarSelector`; D-57/D-60 validador de datos puros;
+§3.2 acceso al selector siempre con perfil cargado). Implementado módulo por módulo
+siguiendo §9: `AvatarRepository` + `RemoteAvatarRepository`, `AvatarFileValidator` (puro),
+`AvatarSelector` compartido, extensión de `MiCuentaViewModel`/`MiCuentaScreen`
+(subida `PUT /users/me/avatar` por picker `PickVisualMedia` con fallback + presets locales
+D-58), descarga `GET /users/me/avatar` renderizada con Coil (D-55). **Suite unitaria 226
+verdes** (198 previos + 28 nuevos: `AvatarFileValidatorTest` 11, `AvatarRepositoryTest`
+MockWebServer 9, `MiCuentaViewModelTest` 8). `assembleDebug` y `assembleDebugAndroidTest`
+BUILD SUCCESSFUL. **D-62 trazado:** se ajustó la firma de `AvatarApi` a tipo directo
+(`uploadAvatar(): Unit`, `getAvatar(): ResponseBody`) porque `Response<T>` no lanza
+`HttpException` y rompía el patrón `llamar`+`aEraError` del proyecto. Instrumentados
+`CambiarAvatarTest` (7) creados, pendientes de ejecutar en dispositivo.
+
+**Corrección de UI de Fase 9 aplicada (2026-09-01, D-63 añadida al plan):** en el emulador
+se evidenció que el link "Cambiar avatar" y el selector inline (en `offset(y=112.dp)`) se
+superponían a "Nombre del menor"/"Correo electrónico" (texto ilegible y contenido tapado).
+Fix: (1) el **trigger** pasa al **toque directo sobre la foto del avatar** (`AvatarPerfil`
+clickable, `tag="avatarTrigger"`; se eliminó el link); (2) el selector se muestra como
+**`AlertDialog` modal overlay** (presets 1/2/3 + "+", título "Elegir un buen avatar", botón
+"Cerrar") que oscurece el resto de la pantalla y no altera el layout ni deja residuos;
+(3) `errorAvatar` se reporta por `Snackbar` (ya no inline). Solo se tocó la capa UI
+(`MiCuentaScreen.kt`) y el `CambiarAvatarTest` instrumentado (tests del link → tests del
+`avatarTrigger`); el ViewModel no cambió (ya gestionaba `selectorAvatarAbierto`).
+`testDebugUnitTest`, `assembleDebug` y `assembleDebugAndroidTest` BUILD SUCCESSFUL.

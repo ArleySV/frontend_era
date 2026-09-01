@@ -11,6 +11,11 @@ data class MiCuentaUiState(
     val nombreUsuario: String = "",
     val guardando: Boolean = false,
     val errorNombreUsuario: String? = null,
+    val selectorAvatarAbierto: Boolean = false,
+    val subiendoAvatar: Boolean = false,
+    val bytesAvatarPersonalizado: ByteArray? = null,
+    val errorAvatar: EraError? = null,
+    val avatarPresetSeleccionado: Int? = null,
 )
 
 sealed interface MiCuentaEvento {

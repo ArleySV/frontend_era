@@ -57,9 +57,15 @@ class FaqViewModelTest {
         assertEquals("Hola", vm.uiState.value.comentario)
         assertTrue(vm.uiState.value.puedeEnviarComentario)
 
-        // Simular 2001 caracteres
+        // 2001 caracteres quedan excluidos: el comentario no se modifica
         vm.onComentarioChange("a".repeat(2001))
-        assertFalse(vm.uiState.value.puedeEnviarComentario)
+        assertEquals("Hola", vm.uiState.value.comentario)
+
+        // 2000 caracteres sí se aceptan
+        val max = "b".repeat(2000)
+        vm.onComentarioChange(max)
+        assertEquals(max, vm.uiState.value.comentario)
+        assertTrue(vm.uiState.value.puedeEnviarComentario)
     }
 
     @Test
