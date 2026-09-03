@@ -72,8 +72,8 @@ com.era.app/
 | 6 | Eliminar cuenta | ✅ Completada (2026-08-30) |
 | 7 | Progreso / Sync (Room + merge offline-first) | ✅ Completada (2026-08-30) |
 | 8 | FAQ + Comentarios | ✅ Completada (2026-08-30) |
-| 9 | Avatar personalizado | ✅ Completada (2026-08-31; fix UI D-63 2026-09-01) — siguiente: Fase 10 |
-| 10 | Pantallas transversales (Splash, Sidebar, Home, Niveles, Juego, Ajustes, FAQ) | ⬜ Pendiente |
+| 9 | Avatar personalizado | ✅ Completada (2026-08-31; fix UI D-63 2026-09-01) |
+| 10 | Pantallas transversales (Splash, Sidebar, Home, Niveles, Juego, Ajustes, FAQ) | 🚧 En curso — S1 Splash ✅ (2026-09-02) |
 
 Implementado hasta ahora:
 
@@ -142,6 +142,14 @@ Implementado hasta ahora:
   "Cerrar") — en el emulador el link y el selector inline se superponían a "Nombre del
   menor"/"Correo electrónico". `errorAvatar` ahora se reporta por `Snackbar`. Solo se tocó
   la capa UI y el `CambiarAvatarTest`; build y 226 unitarios BUILD SUCCESSFUL.
+- **Fase 10 (S1) — Splash + ruta inicial (2026-09-02):** `EraRoutes.SPLASH = "splash"` como
+  `startDestination` del grafo (`EraNavHost`). `SplashViewModel` lee `tieneToken()`
+  **local y síncrono** (sin red): token → `NavegarAHome(HOME_PLACEHOLDER)`, sin token →
+  `NavegarALogin`, ambos limpian el backstack (`popUpTo`). `SplashScreen` (fondo
+  `ColorPrimary`, marca "ERA", frase alternada, spinner, sin controles — REQ-FUN-03).
+  `HOME_PLACEHOLDER` se mantiene en S1; renombrado `→ HOME` en S2. **231 tests verdes**
+  (unitarios, +5 `SplashViewModelTest`). `testDebugUnitTest`, `assembleDebug` y
+  `assembleDebugAndroidTest` BUILD SUCCESSFUL.
 
 ## Compilar y ejecutar
 

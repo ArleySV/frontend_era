@@ -28,6 +28,7 @@ import com.era.app.ui.recuperacion.RecuperacionPaso2Screen
 import com.era.app.ui.recuperacion.RecuperacionPaso3Screen
 import com.era.app.ui.recuperacion.RecuperacionViewModel
 import com.era.app.ui.register.RegistroPaso1Screen
+import com.era.app.ui.splash.SplashScreen
 import com.era.app.ui.register.RegistroPaso2Screen
 import com.era.app.ui.register.RegistroPaso3Screen
 import com.era.app.ui.register.RegistroViewModel
@@ -40,9 +41,24 @@ fun EraNavHost(
 ) {
     NavHost(
         navController = navController,
-        startDestination = EraRoutes.LOGIN,
+        startDestination = EraRoutes.SPLASH,
         modifier = modifier,
     ) {
+        composable(EraRoutes.SPLASH) {
+            SplashScreen(
+                onNavegarAHome = { route ->
+                    navController.navigate(route) {
+                        popUpTo(EraRoutes.SPLASH) { inclusive = true }
+                    }
+                },
+                onNavegarALogin = {
+                    navController.navigate(EraRoutes.LOGIN) {
+                        popUpTo(0) { inclusive = true }
+                    }
+                },
+            )
+        }
+
         composable(EraRoutes.LOGIN) {
             LoginScreen(
                 onNavigateToHome = { navController.navigate(EraRoutes.HOME_PLACEHOLDER) },

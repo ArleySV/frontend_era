@@ -621,3 +621,28 @@ clickable, `tag="avatarTrigger"`; se eliminó el link); (2) el selector se muest
 (`MiCuentaScreen.kt`) y el `CambiarAvatarTest` instrumentado (tests del link → tests del
 `avatarTrigger`); el ViewModel no cambió (ya gestionaba `selectorAvatarAbierto`).
 `testDebugUnitTest`, `assembleDebug` y `assembleDebugAndroidTest` BUILD SUCCESSFUL.
+
+### Fase 10 — Pantallas transversales (carga, sidebar, home, niveles, juego, ajustes, FAQ)
+
+**Sub-fase S1 — Splash + ruta inicial (2026-09-02, completada)**
+
+Plan vinculante: `docs/fase-10-pantallas-transversales-analisis.md` (§6.1, D-65, F-2).
+
+- **Ruta:** `EraRoutes.SPLASH = "splash"` añadida a `EraRoutes.kt`. `EraNavHost`
+  `startDestination = LOGIN → SPLASH`.
+- **ViewModel:** `ui/splash/SplashViewModel.kt` (@HiltViewModel, inyecta
+  `SesionRepository`). En `init` lee `tieneToken()` **local y síncrono** (sin red):
+  token → `SplashEvento.NavegarAHome(HOME_PLACEHOLDER)`; sin token →
+  `SplashEvento.NavegarALogin`. Ambos con `popUpTo` que limpia el backstack sobre el
+  Splash (REQ-FUN-02 CA1 / REQ-FUN-03).
+- **UI:** `ui/splash/SplashScreen.kt` (fondo `ColorPrimary`, marca "ERA", frase
+  alternada hardcodeada por visita, spinner sutil, sin controles interactivos
+  REQ-FUN-03 CA3). `ui/splash/SplashUiState.kt` (`SplashUiState` + sealed `SplashEvento`).
+- **Decisiones:** `HOME_PLACEHOLDER` **se mantiene** en S1 (no hay Home real aún);
+  renombrado `→ HOME` se posterga a S2 (cuando el Home real reemplace el placeholder).
+  Se reutilizan `LoginViewModel` y `HomePlaceholderViewModel` sin cambios.
+- **Tests:** `SplashViewModelTest` (5 unitarios: estado inicial, sin token→Login, con
+  token→Home+route, y los inversos de navegación), usando `FakeSesionRepository`
+  (patrón idéntico a `LoginViewModelTest`). **Suite unitaria 231 verdes** (226 previos
+  + 5 nuevos). `assembleDebug`, `assembleDebugAndroidTest` y `testDebugUnitTest`
+  BUILD SUCCESSFUL. Sin dependencias nuevas.
