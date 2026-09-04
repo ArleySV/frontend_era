@@ -86,6 +86,22 @@ class HomeViewModelTest {
     }
 
     @Test
+    fun `exito de perfil persiste el correo como userId de sesion`() = runTest {
+        user.resultado = Resultado.Exito(
+            UserProfile(
+                nombreMenor = "Sebastián",
+                fechaNacimiento = "2016-05-01",
+                correo = "x@y.com",
+                nombreUsuario = "sebas",
+                avatar = "preset:1",
+            )
+        )
+        vm = crearVm()
+        dispatcher.scheduler.advanceUntilIdle()
+        assertEquals("x@y.com", sesion.correoGuardado)
+    }
+
+    @Test
     fun `fallo de perfil usa fallback generico con correo de sesion`() = runTest {
         user.resultado = Resultado.Fallo(EraError.ErrorConexion)
         sesion.correoGuardado = "fallback@correo.com"

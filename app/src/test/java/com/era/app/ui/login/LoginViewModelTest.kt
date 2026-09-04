@@ -102,6 +102,30 @@ class LoginViewModelTest {
     }
 
     @Test
+    fun `login exitoso con correo persiste el correo como userId`() = runTest {
+        repo.encolarLogin(Resultado.Exito(LoginResponse(token = "jwt_falso_123")))
+
+        vm.onUsuarioOCorreoChange("x@y.com")
+        vm.onContrasenaChange("pass123")
+        vm.onLoginClick()
+        advanceUntilIdle()
+
+        assertEquals("x@y.com", sesion.correoGuardado)
+    }
+
+    @Test
+    fun `login exitoso con nombreUsuario no persiste correo`() = runTest {
+        repo.encolarLogin(Resultado.Exito(LoginResponse(token = "jwt_falso_123")))
+
+        vm.onUsuarioOCorreoChange("pepito")
+        vm.onContrasenaChange("pass123")
+        vm.onLoginClick()
+        advanceUntilIdle()
+
+        assertNull(sesion.correoGuardado)
+    }
+
+    @Test
     fun `login INVALID_CREDENTIALS muestra error general`() = runTest {
         repo.encolarLogin(Resultado.Fallo(EraError.CredencialesInvalidas))
 
@@ -218,12 +242,13 @@ class LoginViewModelTest {
 
     private class FakeSesionRepository : SesionRepository {
         var tokenGuardado: String? = null
+        var correoGuardado: String? = null
         var fueLimpiado = false
 
         override fun guardarToken(token: String) { tokenGuardado = token }
         override fun obtenerToken(): String? = tokenGuardado
-        override fun guardarCorreo(correo: String) {}
-        override fun obtenerCorreo(): String? = null
+        override fun guardarCorreo(correo: String) { correoGuardado = correo }
+        override fun obtenerCorreo(): String? = correoGuardado
         override fun limpiarToken() { tokenGuardado = null; fueLimpiado = true }
         override fun tieneToken(): Boolean = tokenGuardado != null
     }

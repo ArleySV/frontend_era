@@ -16,4 +16,7 @@ object EraRoutes {
     const val ELIMINAR_CUENTA = "eliminar_cuenta"
     const val PROGRESO = "progreso"
     const val FAQ = "faq"
+    const val NIVELES = "niveles"
+    const val JUEGO = "juego"
+    const val JUEGO_NIVEL = "juego/{nivelOrden}"
 }

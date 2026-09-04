@@ -31,6 +31,9 @@ import com.era.app.ui.home.HomeEvento
 import com.era.app.ui.home.HomeScreen
 import com.era.app.ui.home.HomeViewModel
 import com.era.app.ui.login.LoginScreen
+import com.era.app.ui.niveles.NivelesEvento
+import com.era.app.ui.niveles.NivelesScreen
+import com.era.app.ui.niveles.NivelesViewModel
 import com.era.app.ui.perfil.EliminarCuentaScreen
 import com.era.app.ui.perfil.EliminarCuentaViewModel
 import com.era.app.ui.perfil.MiCuentaScreen
@@ -136,7 +139,7 @@ fun EraNavHost(
                     nombreMenor = uiState.nombreMenor,
                     cargandoPerfil = uiState.cargandoPerfil,
                     onOpenDrawer = { scope.launch { drawerState.open() } },
-                    onNavegarNiveles = { /* ruta NIVELES llega en S3 */ },
+                    onNavegarNiveles = { navController.navigate(EraRoutes.NIVELES) },
                 )
             }
 
@@ -147,6 +150,28 @@ fun EraNavHost(
                     onConfirmar = vm::onConfirmarCierre,
                 )
             }
+        }
+
+        composable(EraRoutes.NIVELES) {
+            val vm: NivelesViewModel = hiltViewModel()
+            val uiState by vm.uiState.collectAsState()
+
+            LaunchedEffect(Unit) {
+                vm.eventos.collect { evento ->
+                    when (evento) {
+                        is NivelesEvento.NavegarAJuego -> {
+                            // TODO S4: navegar a EraRoutes.JUEGO_NIVEL resolviendo
+                            // "juego/{nivelOrden}" con navArgument("nivelOrden") tipo Int.
+                        }
+                    }
+                }
+            }
+
+            NivelesScreen(
+                uiState = uiState,
+                onVolver = { navController.popBackStack() },
+                onNivelClick = vm::onNivelClick,
+            )
         }
 
         composable(EraRoutes.PERFIL) {

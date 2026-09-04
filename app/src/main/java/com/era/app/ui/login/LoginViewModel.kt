@@ -7,6 +7,7 @@ import com.era.app.repository.AuthRepository
 import com.era.app.repository.Resultado
 import com.era.app.repository.SesionRepository
 import com.era.app.utils.EraError
+import com.era.app.utils.Validators
 import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject
 import kotlinx.coroutines.channels.Channel
@@ -79,6 +80,11 @@ class LoginViewModel @Inject constructor(
             )) {
                 is Resultado.Exito -> {
                     sesionRepository.guardarToken(r.data.token)
+                    // Si entró con correo (no con nombreUsuario), lo persistimos ya
+                    // como userId; si no, lo resuelve HomeViewModel vía GET /users/me.
+                    if (Validators.isValidEmail(usuarioLimpio)) {
+                        sesionRepository.guardarCorreo(usuarioLimpio)
+                    }
                     _uiState.update { it.copy(cargando = false) }
                     _eventos.trySend(LoginEvento.NavegarAHome)
                 }

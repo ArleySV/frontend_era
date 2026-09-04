@@ -41,6 +41,11 @@ class HomeViewModel @Inject constructor(
         viewModelScope.launch {
             when (val r = userRepository.obtenerPerfil()) {
                 is Resultado.Exito -> {
+                    // Persiste el userId (correo) en la primera pantalla autenticada
+                    // garantizada: sin esto, obtenerNivelesConProgreso() devuelve
+                    // lista vacía si el usuario no pasó antes por "Mi cuenta"
+                    // (patrón MiCuentaViewModel; fix bug S3).
+                    sesionRepository.guardarCorreo(r.data.correo)
                     _uiState.update {
                         it.copy(
                             nombreMenor = r.data.nombreMenor,
