@@ -3,7 +3,7 @@ package com.era.app.ui.navigation
 object EraRoutes {
     const val SPLASH = "splash"
     const val LOGIN = "login"
-    const val HOME_PLACEHOLDER = "home_placeholder"
+    const val HOME = "home"
     const val PERFIL = "perfil"
     const val REGISTRO = "registro"
     const val REGISTRO_PASO1 = "registro/paso1"

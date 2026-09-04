@@ -33,7 +33,7 @@ class SplashViewModel @Inject constructor(
         viewModelScope.launch {
             val evento = if (sesionRepository.tieneToken()) {
                 _uiState.value = _uiState.value.copy(cargando = false)
-                SplashEvento.NavegarAHome(EraRoutes.HOME_PLACEHOLDER)
+                SplashEvento.NavegarAHome(EraRoutes.HOME)
             } else {
                 _uiState.value = _uiState.value.copy(cargando = false)
                 SplashEvento.NavegarALogin

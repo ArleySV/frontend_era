@@ -1,20 +1,35 @@
 package com.era.app.ui.navigation
 
+import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.DrawerValue
 import androidx.compose.material3.SnackbarHostState
+import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
+import androidx.compose.material3.rememberDrawerState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.width
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.navigation
-import com.era.app.ui.login.HomePlaceholderEvento
-import com.era.app.ui.login.HomePlaceholderScreen
-import com.era.app.ui.login.HomePlaceholderViewModel
+import com.era.app.ui.components.EraIcons
+import com.era.app.ui.components.layout.EraDrawer
+import com.era.app.ui.components.layout.EraDrawerItem
+import com.era.app.ui.home.HomeEvento
+import com.era.app.ui.home.HomeScreen
+import com.era.app.ui.home.HomeViewModel
 import com.era.app.ui.login.LoginScreen
 import com.era.app.ui.perfil.EliminarCuentaScreen
 import com.era.app.ui.perfil.EliminarCuentaViewModel
@@ -32,6 +47,9 @@ import com.era.app.ui.splash.SplashScreen
 import com.era.app.ui.register.RegistroPaso2Screen
 import com.era.app.ui.register.RegistroPaso3Screen
 import com.era.app.ui.register.RegistroViewModel
+import com.era.app.ui.theme.ColorError
+import com.era.app.ui.theme.ColorPrimary
+import kotlinx.coroutines.launch
 
 @Composable
 fun EraNavHost(
@@ -61,7 +79,7 @@ fun EraNavHost(
 
         composable(EraRoutes.LOGIN) {
             LoginScreen(
-                onNavigateToHome = { navController.navigate(EraRoutes.HOME_PLACEHOLDER) },
+                onNavigateToHome = { navController.navigate(EraRoutes.HOME) },
                 onNavigateToRegistro = { navController.navigate(EraRoutes.REGISTRO) },
                 onNavigateARecuperacion = { navController.navigate(EraRoutes.RECUPERACION) },
                 snackbarHostState = snackbarHostState,
@@ -69,29 +87,66 @@ fun EraNavHost(
             )
         }
 
-        composable(EraRoutes.HOME_PLACEHOLDER) {
-            val vm: HomePlaceholderViewModel = hiltViewModel()
+        composable(EraRoutes.HOME) {
+            val vm: HomeViewModel = hiltViewModel()
             val uiState by vm.uiState.collectAsState()
+            val drawerState = rememberDrawerState(DrawerValue.Closed)
+            val scope = rememberCoroutineScope()
+
             LaunchedEffect(Unit) {
                 vm.eventos.collect { evento ->
                     when (evento) {
-                        is HomePlaceholderEvento.NavegarALogin ->
+                        is HomeEvento.NavegarALogin ->
                             navController.navigate(EraRoutes.LOGIN) {
                                 popUpTo(0) { inclusive = true }
                             }
                     }
                 }
             }
-            HomePlaceholderScreen(
-                onNavigatePerfil = { navController.navigate(EraRoutes.PERFIL) },
-                onNavigateProgreso = { navController.navigate(EraRoutes.PROGRESO) },
-                onNavigateFaq = { navController.navigate(EraRoutes.FAQ) },
-                onCerrarSesion = vm::onCerrarSesionClick,
-                dialogoCierreVisible = uiState.dialogoCierreVisible,
-                cerrando = uiState.cerrando,
-                onCancelarCierre = vm::onCancelarCierre,
-                onConfirmarCierre = vm::onConfirmarCierre,
+
+            val items = listOf(
+                EraDrawerItem("perfil", EraIcons.AccountCircle, "Mi cuenta"),
+                EraDrawerItem("progreso", EraIcons.Assessment, "Progreso"),
+                EraDrawerItem("separador", EraIcons.Assessment, ""),
+                EraDrawerItem("ajustes", EraIcons.Settings, "Ajustes", habilitado = false),
+                EraDrawerItem("faq", EraIcons.Help, "FAQ"),
+                EraDrawerItem("separador", EraIcons.Assessment, ""),
+                EraDrawerItem("cerrar_sesion", EraIcons.Logout, "Cerrar sesión"),
             )
+
+            EraDrawer(
+                drawerState = drawerState,
+                nombre = uiState.nombreMenor,
+                correo = uiState.correo,
+                avatar = uiState.avatar,
+                cargandoPerfil = uiState.cargandoPerfil,
+                items = items,
+                onItemClick = { id ->
+                    when (id) {
+                        "perfil" -> navController.navigate(EraRoutes.PERFIL)
+                        "progreso" -> navController.navigate(EraRoutes.PROGRESO)
+                        "faq" -> navController.navigate(EraRoutes.FAQ)
+                        else -> scope.launch { drawerState.close() }
+                    }
+                },
+                onCerrarSesionClick = vm::onCerrarSesionClick,
+                bytesAvatarCustom = uiState.bytesAvatarCustom,
+            ) {
+                HomeScreen(
+                    nombreMenor = uiState.nombreMenor,
+                    cargandoPerfil = uiState.cargandoPerfil,
+                    onOpenDrawer = { scope.launch { drawerState.open() } },
+                    onNavegarNiveles = { /* ruta NIVELES llega en S3 */ },
+                )
+            }
+
+            if (uiState.dialogoCierreVisible) {
+                DialogoCierreSesion(
+                    cerrando = uiState.cerrando,
+                    onCancelar = vm::onCancelarCierre,
+                    onConfirmar = vm::onConfirmarCierre,
+                )
+            }
         }
 
         composable(EraRoutes.PERFIL) {
@@ -276,4 +331,56 @@ fun EraNavHost(
             }
         }
     }
+}
+
+@Composable
+private fun DialogoCierreSesion(
+    cerrando: Boolean,
+    onCancelar: () -> Unit,
+    onConfirmar: () -> Unit,
+) {
+    AlertDialog(
+        onDismissRequest = onCancelar,
+        title = {
+            Text(
+                text = "Cerrar sesión",
+                fontSize = 20.sp,
+                fontWeight = FontWeight.Bold,
+            )
+        },
+        text = {
+            Text(
+                text = "¿Deseas cerrar sesión?",
+                fontSize = 16.sp,
+            )
+        },
+        dismissButton = {
+            TextButton(onClick = onCancelar, enabled = !cerrando) {
+                Text(
+                    text = "Cancelar",
+                    color = ColorPrimary,
+                    fontSize = 16.sp,
+                )
+            }
+        },
+        confirmButton = {
+            TextButton(onClick = onConfirmar, enabled = !cerrando) {
+                if (cerrando) {
+                    CircularProgressIndicator(
+                        modifier = Modifier
+                            .width(20.dp)
+                            .height(20.dp),
+                        strokeWidth = 2.dp,
+                        color = ColorPrimary,
+                    )
+                } else {
+                    Text(
+                        text = "Sí, cerrar sesión",
+                        color = ColorError,
+                        fontSize = 16.sp,
+                    )
+                }
+            }
+        },
+    )
 }

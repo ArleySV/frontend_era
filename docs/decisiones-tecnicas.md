@@ -2200,6 +2200,7 @@ Fondo blanco, padding 24/16, lista vertical con gap 20dp entre tarjetas.
 
 | Ruta                    | Parametros         | Pantalla                |
 |-------------------------|--------------------|-------------------------|
+| `splash`                | —                  | Splash                  |
 | `login`                 | —                  | Login                   |
 | `register/step1`        | —                  | Registro 1/3            |
 | `register/step2`        | —                  | Registro 2/3            |
@@ -2208,22 +2209,21 @@ Fondo blanco, padding 24/16, lista vertical con gap 20dp entre tarjetas.
 | `recover/step2`         | —                  | Recuperar 2/3           |
 | `recover/step3`         | —                  | Recuperar 3/3           |
 | `home`                  | —                  | Home                    |
-| `profile`               | —                  | Mi cuenta               |
-| `settings`              | —                  | Ajustes                 |
-| `delete-account`        | —                  | Eliminar cuenta         |
+| `perfil`                | —                  | Mi cuenta               |
+| `ajustes`               | —                  | Ajustes                 |
+| `eliminar_cuenta`       | —                  | Eliminar cuenta         |
 | `faq`                   | —                  | FAQ                     |
-| `levels`                | —                  | Niveles de trivia       |
-| `game/{levelId}`        | levelId: Int       | Juego / Pregunta        |
-| `progress`              | —                  | Progreso                |
-| `coming-soon`           | —                  | Proximamente            |
+| `niveles`               | —                  | Niveles de trivia       |
+| `juego/{nivelOrden}`    | nivelOrden: Int    | Juego / Pregunta        |
+| `progreso`              | —                  | Progreso                |
 
 ### 15.3 Sidebar — rutas de navegacion
 
 | Item              | Ruta destino   | Color barra  | Categoria |
 |-------------------|----------------|--------------|-----------|
-| Mi cuenta         | `profile`      | Verde        | Nav       |
-| Progreso          | `progress`     | Verde        | Nav       |
-| Ajustes           | `settings`     | Verde        | Nav       |
+| Mi cuenta         | `perfil`       | Verde        | Nav       |
+| Progreso          | `progreso`     | Verde        | Nav       |
+| Ajustes           | `ajustes`      | Verde        | Nav       |
 | FAQ               | `faq`          | Gris         | Support   |
 | Cerrar Sesion     | `login` (limpia JWT) | Gris  | Exit      |
 

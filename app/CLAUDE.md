@@ -646,3 +646,117 @@ Plan vinculante: `docs/fase-10-pantallas-transversales-analisis.md` (§6.1, D-65
   (patrón idéntico a `LoginViewModelTest`). **Suite unitaria 231 verdes** (226 previos
   + 5 nuevos). `assembleDebug`, `assembleDebugAndroidTest` y `testDebugUnitTest`
   BUILD SUCCESSFUL. Sin dependencias nuevas.
+
+**Sub-fase S2 — Drawer + Home real + renombrado HOME (2026-09-02, completada)**
+
+Plan vinculante: `docs/fase-10-pantallas-transversales-analisis.md` (§6.2, §6.3 y
+correcciones del auditor: 1-7). Elimina el placeholder de Fase 2 (D-18).
+
+- **Rutas:** `EraRoutes.HOME = "home"` reemplaza `HOME_PLACEHOLDER` (0 referencias
+  restantes). `startDestination` **sigue siendo SPLASH** (D-65, corrección 1 del
+  auditor). `LoginEvento.NavegarAHome` intacto; el target se resuelve en `EraNavHost`
+  (corrección 2).
+- **Eliminado:** `HomePlaceholderScreen.kt`, `HomePlaceholderViewModel.kt`,
+  `HomePlaceholderUiState.kt`, `HomePlaceholderScreenTest.kt` (y su test unitario).
+- **Nuevo `ui/home/`:** `HomeUiState.kt` (`HomeUiState` + sealed `HomeEvento {
+  NavegarALogin }`), `HomeViewModel.kt` (@HiltViewModel, inyecta `AuthRepository` +
+  `SesionRepository` + `UserRepository`; carga `obtenerPerfil()` en `init` con
+  fallback offline genérico usando `sesionRepository.obtenerCorreo()` — REQ-NF-01;
+  logout real: `authRepository.logout()` + `limpiarToken()`), `HomeScreen.kt` (hero
+  `ColorPrimary` 300dp con saludo `nombreMenor` — corrección 4, hamburguesa 54dp,
+  card Trivia Escolar → NIVELES en S3, card Próximamente inactiva).
+- **Nuevo `ui/components/layout/EraDrawer.kt`:** `ModalNavigationDrawer` M3 (ya en la
+  dep `material3` — corrección 3, sin dependencias nuevas). Cabecera `ColorPrimary`
+  con avatar (presets `avatar_preset_1/2/3` o iniciales), nombre y correo. Items: Mi
+  cuenta/Progreso/FAQ activos (navegan a rutas existentes), **Ajustes visible pero
+  deshabilitado** (`habilitado = false`, corrección 6 — se habilita en S5), Cerrar
+  sesión (rojo). El diálogo de confirmación de cierre (`DialogoCierreSesion`) vive en
+  `EraNavHost.kt` (patrón movido del placeholder). El drawer envuelve **solo** el Home.
+- **Iconos (correcciones 3 y 7):** `AccountCircle`, `Assessment`, `Settings`, `Help`,
+  `Logout` + `Menu` y `Clock` como `ImageVector` en `EraIcons.kt` (patrón
+  `PathParser`+`materialIcon`, O-2 — sin drawables separados ni
+  `material-icons-extended`).
+- **API M3 1.4.0:** el BOM `2026.02.01` resuelve `material3 1.4.0`, donde
+  `rememberModalNavigationDrawerState` ya no existe → se usa
+  `rememberDrawerState(DrawerValue.Closed)`. También se eliminó el import incorrecto
+  `androidx.navigation.rememberNavController` (no usado; el paquete correcto es
+  `androidx.navigation.compose`).
+- **Tests:** `HomeViewModelTest` (7 unitarios: carga de perfil éxito/fallo+fallback,
+  diálogo cerrar sesión abrir/cancelar/confirmar con limpieza de token y evento,
+  anti doble-tap; fakes `FakeUserRepository`/`FakeSesionRepository`/`FakeAuthRepository`
+  completos, patrón `LoginViewModelTest`) y `HomeScreenTest` (4 instrumentados: saludo,
+  hamburguesa abre drawer con items, cabecera con nombre/correo, Ajustes deshabilitado
+  — corrección 5, reemplaza a `HomePlaceholderScreenTest`). **Suite unitaria 228
+  verdes** (231 − 10 `HomePlaceholderViewModelTest` + 7). `testDebugUnitTest`,
+  `assembleDebug` y `assembleDebugAndroidTest` BUILD SUCCESSFUL. Sin dependencias nuevas.
+
+**Corrección de UI de S2 (2026-09-03, 4 bugs vs prototipo `page-0007`)**
+
+- **Bug 1 — avatar con foto remota caía a iniciales:** `AvatarDrawer` solo contemplaba
+  `preset:1/2/3`. Fix: (a) si `avatar` es `custom:*`, `HomeViewModel` descarga el binario
+  best-effort vía `AvatarRepository.obtenerAvatarBytes()` (patrón `MiCuentaViewModel`;
+  el campo `avatar` del perfil no es una URL, el binario vive en `GET /users/me/avatar`
+  con JWT) y `HomeUiState` añade `bytesAvatarCustom` (con `equals`/`hashCode`
+  manuales por el `ByteArray`); (b) si `avatar` es URL `http(s)`, `AsyncImage` de Coil
+  (ya en deps, Fase 9); iniciales solo para `null`/vacío. `EraDrawer` recibe
+  `bytesAvatarCustom`. No se tocó `AvatarPerfil` (M3 1.4.0 `ModalDrawerSheet`).
+- **Bug 2 — header sin alto mínimo:** `CabeceraDrawer` añade `.heightIn(min = 220.dp)`
+  (spec §13.5) y `testTag("drawer_cabecera")` **antes** del padding (los tags colocados
+  después de `.padding` exponen la caja interna y rompen la aserción de tamaño).
+- **Bug 3 — íconos casi invisibles:** tint `ColorSurface` (gris claro) → `ColorPrimary`.
+- **Bug 4 — ítems pegados:** items envueltos en `Column(verticalArrangement =
+  Arrangement.spacedBy(8.dp))`, filas `44dp → 56dp`.
+- **Tests:** `HomeViewModelTest` +2 (descarga para `custom:*`, no-descarga para
+  `preset:`) → **230 unitarios verdes**. `HomeScreenTest` 4→8 instrumentados (avatar
+  URL sin iniciales, `custom:*`+bytes, `null`→iniciales, alto mínimo de cabecera con
+  nombre corto). Nota de debugging: `performScrollTo` falla en el drawer (sin
+  `verticalScroll` — los items caben en pantalla, se eliminó); la primera corrida tuvo
+  3 fallos espurios por sueño del dispositivo (541s de stall en un test; con
+  `svc power stayon` la suite pasó 8/8). **8/8 instrumentados en físico ABR-LX3**.
+  `testDebugUnitTest`, `assembleDebug` y `assembleDebugAndroidTest` BUILD SUCCESSFUL.
+
+**Corrección visual del Home vs prototipo (2026-09-03)**
+
+Rework de `HomeScreen.kt` para igualar el prototipo (regla 13), sin tocar
+ViewModel/navegación/callbacks (mismos testTags: `boton_hamburguesa`, `saludo_home`,
+`card_trivia`, `card_proximamente`, `boton_jugar`):
+
+- **Hero:** hamburguesa blanca directa (3 barras, 40dp, sin círculo de fondo);
+  decoraciones absolutas — 2 barras diagonales menta `rotate(-45°)` (`ColorTriviaBg`),
+  círculo "123" blanco translúcido 90dp, círculo "ABC" `ColorPrimaryLight` 92dp al
+  frente, signo "+" con 2 `Box` redondeados `ColorSurface` sangrando por el borde
+  derecho; saludo `¡Hola, <nombre>!` (con coma) en `BottomStart`, subtítulo a 2 líneas
+  (`width(220dp)`). `DecoracionesHero` es extensión de `BoxScope` (requisito para
+  `Modifier.align`).
+- **Card Trivia:** `Column` centrada — icono puzle teal sin círculo (nuevo
+  `EraIcons.Puzzle`, path `extension` de Material, patrón O-2), título/subtitle
+  `ColorTriviaText` centrados, botón "Jugar" compacto (44dp, padding horizontal 32dp).
+- **Card Próximamente:** de `Row` a `Column` centrada — reloj `ColorSoonIcon` 52dp,
+  título `ColorSoonTitle` 24sp, subtítulo "Nuevo modo de juego" 16sp.
+- **Tests:** saludo esperado actualizado a `¡Hola, Sebastián!`. **230 unitarios
+  verdes** y **8/8 instrumentados en físico ABR-LX3**. Builds BUILD SUCCESSFUL.
+
+**Recalibración del hero (2026-09-03, tras verificación en dispositivo):** con nombres
+largos ("Judith Salcedo Santos") el saludo invadía las decoraciones. Fix: barras
+diagonales acortadas a 108dp y confinadas al cuadrante superior izquierdo (bbox
+y ≈ 3..131dp, sobre la zona del saludo que arranca en y ≈ 141dp); saludo con
+`widthIn(max = 250.dp)` + `bottom = 24dp` (envuelve a 2 líneas sin tocar círculos ni
+"+"); círculos reposicionados como en el prototipo ("123" en `TopEnd offset(-83, 50)`,
+detrás; "ABC" en `offset(-36, 4)`, al frente, solape ~45dp); "+" con sangrado de 20dp.
+**230 unitarios y 8/8 instrumentados verdes.**
+
+**Hero con imagen del prototipo (2026-09-03):** las decoraciones dibujadas con
+`Box`/`rotate` se reemplazan por el PNG exportado de Figma
+(`Signo Igual-+-ABC123 barner home.png`, RGBA verificado con fondo transparente),
+alojado en `res/drawable-nodpi/img_hero_home.png` (patrón existente de bitmaps:
+`avatar_preset_*`, `signo_*`). El recurso quedó **al 76.5%** (543×418; −15% y −10%
+adicionales a pedido del propietario) y el `HeroHome`
+lo renderiza con `Image(painterResource, ContentScale.Fit,
+Modifier.align(TopEnd).offset(x = (-10).dp, y = 5.dp)
+.fillMaxWidth(0.765f).aspectRatio(543f/418f))` — imagen y layout
+reducidos, y desplazada 10dp a la izquierda y 5dp abajo (ajuste del propietario;
+el offset aplica solo al composable de la decoración). Eliminados `DecoracionesHero`
+y `BarraDiagonal` (y sus imports:
+`rotate`, `offset`, `CircleShape`, `ColorSurface`, `ColorPrimaryLight`, `BoxScope`).
+El original a tamaño completo se archivó en `docs/prototipos/`. **230 unitarios y
+8/8 instrumentados (ABR-LX3) verdes.**

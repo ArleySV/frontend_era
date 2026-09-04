@@ -59,7 +59,7 @@ class SplashViewModelTest {
     }
 
     @Test
-    fun `con token emite NavegarAHome hacia HOME_PLACEHOLDER y detiene carga`() = runTest {
+    fun `con token emite NavegarAHome hacia HOME y detiene carga`() = runTest {
         sesion.tokenGuardado = "jwt-test"
         vm = crearVm()
         val eventos = Channel<SplashEvento>(Channel.BUFFERED)
@@ -68,7 +68,7 @@ class SplashViewModelTest {
         advanceUntilIdle()
 
         val evento = eventos.receive()
-        assertEquals(SplashEvento.NavegarAHome(EraRoutes.HOME_PLACEHOLDER), evento)
+        assertEquals(SplashEvento.NavegarAHome(EraRoutes.HOME), evento)
         assertFalse(vm.uiState.value.cargando)
         job.cancel()
     }

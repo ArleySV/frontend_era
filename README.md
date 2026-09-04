@@ -1,4 +1,4 @@
-# FRONTEND_ERA — Cliente Android de ERA
+﻿# FRONTEND_ERA — Cliente Android de ERA
 
 **ERA (Educación, Repaso y Aprendizaje)** es una aplicación Android nativa de trivia
 educativa para niños de básica primaria (**7 a 11 años**), compatible desde
@@ -73,7 +73,7 @@ com.era.app/
 | 7 | Progreso / Sync (Room + merge offline-first) | ✅ Completada (2026-08-30) |
 | 8 | FAQ + Comentarios | ✅ Completada (2026-08-30) |
 | 9 | Avatar personalizado | ✅ Completada (2026-08-31; fix UI D-63 2026-09-01) |
-| 10 | Pantallas transversales (Splash, Sidebar, Home, Niveles, Juego, Ajustes, FAQ) | 🚧 En curso — S1 Splash ✅ (2026-09-02) |
+| 10 | Pantallas transversales (Splash, Sidebar, Home, Niveles, Juego, Ajustes, FAQ) | 🚧 En curso — S1 Splash ✅ + S2 Home/Drawer ✅ (2026-09-02) |
 
 Implementado hasta ahora:
 
@@ -150,6 +150,44 @@ Implementado hasta ahora:
   `HOME_PLACEHOLDER` se mantiene en S1; renombrado `→ HOME` en S2. **231 tests verdes**
   (unitarios, +5 `SplashViewModelTest`). `testDebugUnitTest`, `assembleDebug` y
   `assembleDebugAndroidTest` BUILD SUCCESSFUL.
+- **Fase 10 (S2) — Drawer + Home real + renombrado `HOME` (2026-09-02):** eliminado el
+  placeholder de Fase 2. `EraRoutes.HOME = "home"` reemplaza `HOME_PLACEHOLDER` (actualizados
+  `EraNavHost`, `SplashViewModel` y sus tests). Nuevos: `ui/home/` (`HomeUiState`,
+  `HomeViewModel` con perfil vía `UserRepository.obtenerPerfil()` y fallback offline genérico;
+  `HomeScreen` con hero 300dp, hamburguesa 54dp, card Trivia Escolar → NIVELES en S3 y card
+  Próximamente inactiva) y `ui/components/layout/EraDrawer.kt` (`ModalNavigationDrawer` M3,
+  cabecera `ColorPrimary` con avatar/nombre/correo, items Mi cuenta/Progreso/FAQ activos,
+  Ajustes visible pero deshabilitado hasta S5, cierre de sesión con `AlertDialog` →
+  `authRepository.logout()` + `limpiarToken()` → Login con backstack limpio). Iconos sidebar
+  como `ImageVector` en `EraIcons.kt` (`AccountCircle`, `Assessment`, `Settings`, `Help`,
+  `Logout`, `Menu`, `Clock` — patrón `PathParser`, O-2). El drawer envuelve solo el Home;
+  el resto de pantallas no lo llevan. **228 tests verdes** (unitarios: 231 − 10
+  `HomePlaceholderViewModelTest` eliminado + 7 `HomeViewModelTest`). `testDebugUnitTest`,
+  `assembleDebug` y `assembleDebugAndroidTest` BUILD SUCCESSFUL.
+
+- **Fase 10 (S2 fix) — corrección del drawer vs prototipo (2026-09-03):** avatar remoto
+  (`custom:*` con binario vía `GET /users/me/avatar` + JWT, o URL con Coil `AsyncImage`)
+  ya no cae a iniciales; cabecera con `heightIn(min = 220dp)`; tint de íconos
+  `ColorPrimary`; espaciado de ítems (filas 56dp, `spacedBy(8dp)`). **230 unitarios
+  verdes** y **8/8 instrumentados** en físico ABR-LX3 (`HomeScreenTest`).
+
+- **Fase 10 (S2 fix 2) — Home vs prototipo (2026-09-03):** hamburguesa blanca directa;
+  decoraciones del hero (barras diagonales, círculos ABC/123, signo +); saludo
+  `¡Hola, <nombre>!` a 2 líneas; card Trivia centrada con icono puzle (`EraIcons.Puzzle`)
+  y botón compacto; card Próximamente centrada con subtítulo `Nuevo modo de juego`.
+  **230 unitarios** y **8/8 instrumentados** (ABR-LX3).
+
+- **Fase 10 (S2 fix 3) — hero recalibrado (2026-09-03):** decoraciones confinadas a la
+  mitad superior (barras 108dp, círculos ABC/123 solapados arriba, + con sangrado) y
+  saludo acotado a `widthIn(max = 250dp)` — sin superposición con nombres largos.
+  **230 unitarios** y **8/8 instrumentados** (ABR-LX3).
+
+- **Fase 10 (S2 fix 4) — hero con imagen Figma (2026-09-03):** decoraciones del hero
+  reemplazadas por el PNG del prototipo (`img_hero_home.png` en `drawable-nodpi`,
+  RGBA transparente, al 76.5%: 543x418 y `fillMaxWidth(0.765f)`, con `offset(-10dp, +5dp)`
+  solo sobre la decoración); eliminados los composables `DecoracionesHero`/`BarraDiagonal`;
+  original archivado en `docs/prototipos/`. **230 unitarios** y **8/8 instrumentados**
+  (ABR-LX3).
 
 ## Compilar y ejecutar
 
