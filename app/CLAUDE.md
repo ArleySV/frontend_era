@@ -609,6 +609,9 @@ BUILD SUCCESSFUL. **D-62 trazado:** se ajustó la firma de `AvatarApi` a tipo di
 (`uploadAvatar(): Unit`, `getAvatar(): ResponseBody`) porque `Response<T>` no lanza
 `HttpException` y rompía el patrón `llamar`+`aEraError` del proyecto. Instrumentados
 `CambiarAvatarTest` (7) creados, pendientes de ejecutar en dispositivo.
+**Ejecutados (2026-09-04):** suite instrumentada completa **77/77 verdes** en físico
+ABR-LX3 (18 clases, incluye los 7 de `CambiarAvatarTest` y los 8 de `HomeScreenTest`
+de S2), tras el commit de S2.
 
 **Corrección de UI de Fase 9 aplicada (2026-09-01, D-63 añadida al plan):** en el emulador
 se evidenció que el link "Cambiar avatar" y el selector inline (en `offset(y=112.dp)`) se
