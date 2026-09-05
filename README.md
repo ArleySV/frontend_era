@@ -183,11 +183,33 @@ Implementado hasta ahora:
   **230 unitarios** y **8/8 instrumentados** (ABR-LX3).
 
 - **Fase 10 (S2 fix 4) — hero con imagen Figma (2026-09-03):** decoraciones del hero
-  reemplazadas por el PNG del prototipo (`img_hero_home.png` en `drawable-nodpi`,
-  RGBA transparente, al 76.5%: 543x418 y `fillMaxWidth(0.765f)`, con `offset(-10dp, +5dp)`
-  solo sobre la decoración); eliminados los composables `DecoracionesHero`/`BarraDiagonal`;
-  original archivado en `docs/prototipos/`. **230 unitarios** y **8/8 instrumentados**
-  (ABR-LX3).
+   reemplazadas por el PNG del prototipo (`img_hero_home.png` en `drawable-nodpi`,
+   RGBA transparente, al 76.5%: 543x418 y `fillMaxWidth(0.765f)`, con `offset(-10dp, +5dp)`
+   solo sobre la decoración); eliminados los composables `DecoracionesHero`/`BarraDiagonal`;
+   original archivado en `docs/prototipos/`. **230 unitarios** y **8/8 instrumentados**
+   (ABR-LX3).
+
+- **Fase 10 (S3) — Pantalla Niveles (2026-09-04):** rutas `NIVELES`, `JUEGO`,
+  `JUEGO_NIVEL` en `EraRoutes.kt`. `NivelesScreen` con cabecera (`img_hero_menu_niveles.png`,
+  botón atrás `boton_volver`, título `titulo_cabecera`), `LazyColumn` con 20 `NivelCard`
+  por estado (COMPLETADO/DISPONIBLE/BLOQUEADO). `NivelesViewModel` con Flow
+  `obtenerNivelesConProgreso()` solo-lectura, guard anti-BLOQUEADO en UI y VM.
+  Fix de datos C1/C2 (`HomeViewModel` y `LoginViewModel` persisten `correo` en
+  `SesionRepository`). 20 imágenes `img_study1..20` en `drawable-nodpi` (.gif → .jpg).
+  Tests: `NivelesViewModelTest` (5) + `NivelesScreenTest` (6 instrumentados).
+  **238 tests verdes.** `assembleDebug` y `assembleDebugAndroidTest` BUILD SUCCESSFUL.
+
+- **Fase 10 (S4) — Juego / Quiz (2026-09-04):** `JuegoScreen` + `JuegoViewModel` con
+  máquina de estados `CARGANDO/JUGANDO/RESULTADO/PAUSA/MENU`. Cronómetro **15 s**
+  (cambiado de 10). **Auto-continue:** tras acierto navega al siguiente nivel; si es
+  el nivel 20 o bloqueado, vuelve a NIVELES. `JuegoEvento.NavegarANiveles(orden)` y
+  `JuegoEvento.VolverANiveles`. Mensajes aleatorios: `FRASES_FELICITACION` (20 frases,
+  correcto) y `FRASES_MOTIVACION` (17 frases, incorrecto). **Overlay Pausa:** "Estírate y
+  respira." + ventana verde claro (`ColorVerdeClaro`) con frase aleatoria de
+  `FRASES_SABIAS` (20 datos curiosos para niños). Al fallar, **no se muestra la
+  respuesta correcta**. Fix: `init` usa `.first().firstOrNull()` para evitar
+  `NoSuchElementException`. Tests actualizados `JuegoViewModelTest` (10).
+  `assembleDebug` BUILD SUCCESSFUL.
 
 ## Compilar y ejecutar
 

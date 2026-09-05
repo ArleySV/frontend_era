@@ -288,34 +288,44 @@ Máquina de estados de la partida: `CARGANDO / JUGANDO / RESULTADO / PAUSA / MEN
   (line-height 1.3), y 3 opciones pill blancas (texto 17sp Bold, alto min 56dp,
   gap 16dp, sombra).
 - **Resultado (§13.7.3):** bottom sheet blanco (esquinas 24dp) 3 s con título
-  verde/rojo según correcta/incorrecta y mensaje motivacional:
-  - Correcto → avanzar al **siguiente nivel disponible**; si no hay más, volver a
-    `NIVELES`.
-  - Incorrecto → reiniciar la **misma** pregunta (reintentos ilimitados).
-  - **2 fallos consecutivos → overlay Pausa** (§13.8.2): emoji 🧘 56sp, "Estírate y
-    respira." 24sp Bold, "Tómate un momento.", círculo 84dp con cuenta regresiva 60 s
-    (borde 3dp blanco, 30sp Bold). Al llegar a 0 → cierra overlay, resetea racha,
-    reinicia la pregunta (REQ-FUN-11 CA3).
+  verde/rojo según correcta/incorrecta y **mensaje aleatorio** de las listas
+  `FRASES_FELICITACION` (correcto) o `FRASES_MOTIVACION` (incorrecto):
+  - Correcto → avanzar automáticamente al **siguiente nivel disponible** (auto-continue);
+    si no hay más, volver a `NIVELES`.
+  - Incorrecto → reiniciar la **misma** pregunta (reintentos ilimitados);
+    **no se muestra la respuesta correcta** al fallar.
+  - **2 fallos consecutivos → overlay Pausa** (§13.8.2): emoji 🧘 56sp,
+    "Estírate y respira." 24sp Bold, **ventana verde claro (`ColorVerdeClaro`)**
+    con frase aleatoria de `FRASES_SABIAS` ("¿Sabías que...?"),
+    círculo 84dp con cuenta regresiva 60 s (borde 3dp blanco, 30sp Bold).
+    Al llegar a 0 → cierra overlay, resetea racha, reinicia la pregunta (REQ-FUN-11 CA3).
 - **Overlay menu-nivel (§13.8.1):** modal centrado (fondo oscuro 55%, tarjeta gris
   `ColorSurface`, radio 24dp, max 340dp) con 3 botones pill: **Continuar** (texto
   `ColorNivelCompletado`), **Reiniciar** (texto `ColorNivelBloqueado`) y **Salir**
   (texto `ColorError`) → `NIVELES`.
 
 **Lógica (REQ-FUN-11):**
-- Cronómetro **10 s automático, no pausable** (CA1): `LaunchedEffect` con decremento
+- Cronómetro **15 s automático, no pausable** (CA1): `LaunchedEffect` con decremento
   cada 1000 ms; tocar 0 → se procesa como incorrecta sin respuesta.
 - Al responder, el cronómetro se **detiene** de inmediato (CA2) y se evalúa.
 - Cada resolución llama `RoomProgresoRepository.registrarResultado(orden, exito)`:
   actualiza `estadoNivel` (forward-only → auto-desbloqueo CA2), `intentosTotales`,
   `intentosFallidosConsecutivos` y `completadoEn`; todo persiste y es sincronizable.
+- **Auto-continue (REQ-FUN-10):** tras acierto, si el siguiente nivel existe y está
+  disponible/completado, navega automáticamente a `JUEGO/{siguienteOrden}`;
+  si es el nivel 20 o el siguiente está bloqueado, vuelve a `NIVELES`.
 - `intentosFallidosConsecutivos` se resetea al superar el nivel o al salir (CA3) —
   gestionado por `registrarResultado`.
 - Back físico/gesto durante JUGANDO → equivale a "Salir" del overlay (confirmación
   del sistema con mensaje "¿Salir del nivel?").
+- **Mensajes alternados:** las frases de felicitación e incorrectas se seleccionan
+  aleatoriamente de las listas `FRASES_FELICITACION` y `FRASES_MOTIVACION`
+  (20 frases cada una, pensadas para niños de 7 años en adelante).
 
 **Capas:**
-- `ui/juego/JuegoScreen.kt`, `ui/juego/JuegoViewModel.kt`, `JuegoUiState.kt`,
-  `JuegoEvento.kt` (nuevos)
+- `ui/juego/JuegoScreen.kt`, `ui/juego/JuegoViewModel.kt`, `JuegoUiState.kt` (nuevos/modificados).
+- `JuegoEvento` integrado en `JuegoUiState.kt`: `NavegarANiveles(orden: Int)` y `VolverANiveles`.
+- Constantes de frases (`FRASES_FELICITACION`, `FRASES_MOTIVACION`, `FRASES_SABIAS`) como companion object en `JuegoViewModel`.
 - Componentes quiz nuevos: `quiz-header`, `opcion-respuesta`, `resultado-sheet`,
   `overlay-menu-nivel`, `overlay-pausa`, `cronometro-circular`
   (`ui/components/quiz/`, `ui/components/juego/`) — reutilizando tokens existentes.

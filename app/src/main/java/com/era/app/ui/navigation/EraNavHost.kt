@@ -7,6 +7,7 @@ import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.rememberDrawerState
+import androidx.activity.compose.BackHandler
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -21,15 +22,20 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
+import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
-import androidx.navigation.navigation
+import androidx.navigation.compose.navigation
+import androidx.navigation.navArgument
 import com.era.app.ui.components.EraIcons
 import com.era.app.ui.components.layout.EraDrawer
 import com.era.app.ui.components.layout.EraDrawerItem
 import com.era.app.ui.home.HomeEvento
 import com.era.app.ui.home.HomeScreen
 import com.era.app.ui.home.HomeViewModel
+import com.era.app.ui.juego.JuegoEvento
+import com.era.app.ui.juego.JuegoScreen
+import com.era.app.ui.juego.JuegoViewModel
 import com.era.app.ui.login.LoginScreen
 import com.era.app.ui.niveles.NivelesEvento
 import com.era.app.ui.niveles.NivelesScreen
@@ -159,10 +165,8 @@ fun EraNavHost(
             LaunchedEffect(Unit) {
                 vm.eventos.collect { evento ->
                     when (evento) {
-                        is NivelesEvento.NavegarAJuego -> {
-                            // TODO S4: navegar a EraRoutes.JUEGO_NIVEL resolviendo
-                            // "juego/{nivelOrden}" con navArgument("nivelOrden") tipo Int.
-                        }
+                        is NivelesEvento.NavegarAJuego ->
+                            navController.navigate("${EraRoutes.JUEGO}/${evento.orden}")
                     }
                 }
             }
@@ -171,6 +175,36 @@ fun EraNavHost(
                 uiState = uiState,
                 onVolver = { navController.popBackStack() },
                 onNivelClick = vm::onNivelClick,
+            )
+        }
+
+        composable(
+            route = EraRoutes.JUEGO_NIVEL,
+            arguments = listOf(navArgument("nivelOrden") { type = NavType.IntType }),
+        ) {
+            val vm: JuegoViewModel = hiltViewModel()
+            val uiState by vm.uiState.collectAsState()
+
+            LaunchedEffect(Unit) {
+                vm.eventos.collect { evento ->
+                    when (evento) {
+                        is JuegoEvento.NavegarANiveles ->
+                            navController.navigate("${EraRoutes.JUEGO}/${evento.orden}")
+                        is JuegoEvento.VolverANiveles ->
+                            navController.popBackStack(EraRoutes.NIVELES, inclusive = false)
+                    }
+                }
+            }
+
+            BackHandler { vm.onAtrasSistema() }
+
+            JuegoScreen(
+                uiState = uiState,
+                onOpcionClick = vm::onOpcionClick,
+                onAbrirMenu = vm::onAbrirMenu,
+                onContinuar = vm::onContinuar,
+                onReiniciar = vm::onReiniciar,
+                onSalir = vm::onSalir,
             )
         }
 

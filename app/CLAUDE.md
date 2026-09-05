@@ -763,3 +763,56 @@ y `BarraDiagonal` (y sus imports:
 `rotate`, `offset`, `CircleShape`, `ColorSurface`, `ColorPrimaryLight`, `BoxScope`).
 El original a tamaño completo se archivó en `docs/prototipos/`. **230 unitarios y
 8/8 instrumentados (ABR-LX3) verdes.**
+
+### Fase 10 — Sub-fase S3 — Pantalla Niveles (2026-09-04, completada)
+
+Plan vinculante: `docs/fase-10-pantallas-transversales-analisis.md` (§6.4, D-68, D-76, D-77, D-79, D-80, O-3 v2).
+
+- **Rutas:** `EraRoutes.NIVELES = "niveles"`, `EraRoutes.JUEGO = "juego"`,
+  `EraRoutes.JUEGO_NIVEL = "juego/{nivelOrden}"` añadidas a `EraRoutes.kt`.
+- **UI:** `ui/niveles/NivelesScreen.kt` (cabecera con `img_hero_menu_niveles.png`,
+  botón atrás `boton_volver`, título `titulo_cabecera`, lista `lista_niveles`
+  con 20 `NivelCard` por estado: COMPLETADO/DISPONIBLE/BLOQUEADO, tags `nivel_card_<orden>`).
+  `NivelesUiState.kt` + `NivelesViewModel.kt` (ViewModel solo-lectura del Flow
+  `obtenerNivelesConProgreso()`, guard doble UI+VM anti-BLOQUEADO).
+- **Datos:** `NivelConProgreso` (modelo Room), `ProgresoRepository.obtenerNivelesConProgreso()`
+  (LEFT JOIN Fase 7). `RoomProgresoRepository` calcula `estado`:
+  `estadoNivel ?: if (orden == 1) "DISPONIBLE" else "BLOQUEADO"`.
+  Fix de datos (C1/C2): `HomeViewModel` y `LoginViewModel` persisten `correo`
+  en `SesionRepository` para que `obtenerNivelesConProgreso()` funcione
+  tras login fresco.
+- **Assets:** 20 imágenes `img_study1.jpg`…`img_study20.jpg` en `res/drawable-nodpi/`.
+  `.gif` reemplazadas por `.jpg` (img_study2, img_study3, img_study19).
+- **Navegación:** `EraNavHost` con `HomeScreen` → `onNavegarNiveles` → `NIVELES`.
+  `NivelesEvento.NavegarAJuego` → TODO S4 (se implementa en S4).
+- **Tests:** `NivelesViewModelTest` (5 unitarios: estado inicial, flujo,
+  actualización, Disponible/Completado navega, Bloqueado no navega).
+  `NivelesScreenTest` (6 instrumentados: cabecera, lista, click Disponible,
+  click Completado, Bloqueado sin click, botón atrás). **Suite unitaria 238 verdes.**
+  `assembleDebug` y `assembleDebugAndroidTest` BUILD SUCCESSFUL. Sin dependencias nuevas.
+
+### Fase 10 — Sub-fase S4 — Juego / Quiz (2026-09-04, implementación y docs)
+
+Plan vinculante: `docs/fase-10-pantallas-transversales-analisis.md` (§6.5, D-69, D-81).
+
+- **UI:** `JuegoScreen.kt` + `JuegoViewModel.kt` + `JuegoUiState.kt` + `JuegoEvento`.
+- **Cronómetro:** 15 s (cambiado de 10 s) con arco progresivo proporcional.
+- **Auto-continue:** tras acierto, si siguiente nivel disponible → navega
+  automáticamente a `JUEGO/{siguienteOrden}`; si es nivel 20 o bloqueado →
+  `VolverANiveles`.
+- **Mensajes alternados:** `FRASES_FELICITACION` (20 frases, correcto) y
+  `FRASES_MOTIVACION` (17 frases, incorrecto) seleccionadas aleatoriamente.
+- **Overlay Pausa:** "Estírate y respira." + **ventana `ColorVerdeClaro`** con
+  frase aleatoria de `FRASES_SABIAS` (20 datos curiosos para niños).
+- **Opción incorrecta:** al fallar, la respuesta correcta **no se muestra**
+  (solo se resalta la opción seleccionada en rojo).
+- **Navegación:** `JuegoEvento.NavegarANiveles(orden)` → navega al juego;
+  `JuegoEvento.VolverANiveles` → vuelve a NIVELES.
+- **Fix:** `JuegoViewModel.init` usa `.first().firstOrNull()` (no `.filterNotNull().first()`)
+  para evitar `NoSuchElementException`.
+- **Tests:** `JuegoViewModelTest` actualizado (10 unitarios: carga 15s,
+  cronómetro, correcto→siguiente nivel, último nivel→NIVELES, incorrecto,
+  timeout, pausa, menú sin pausar, mensaje correcto, mensaje incorrecto,
+  frase sabia en pausa). `assembleDebug` BUILD SUCCESSFUL.
+
+**Fase 9 (2026-08-31) — Avatar personalizado (completada)**
